@@ -16,28 +16,32 @@ How to Run the Project:
 
 Clone the Repository:
 
-bash
-Copy code
-git clone https://github.com/your-username/VoAr.git
-cd VoAr
+bash |
+Copy code |
+-git clone https://github.com/your-username/VoAr.git |
+cd VoAr |
+
 Set Up Environment Variables:
 
 Create a .env file (and name it st.env) in the project root.
 Add the necessary environment variables for database connection, Google OAuth credentials, etc.
 Install Dependencies:
 
-bash
-Copy code
-go get -u ./...
-Build and Run:
+bash |
+Copy code |
+go get -u ./... |
 
-bash
-Copy code
-go build -o VoAr
-./VoAr
+Build and Run: 
+
+bash |
+Copy code |
+go build -o VoAr |
+./VoAr |
 
 Access the Application:
+
 Open your web browser and navigate to http://localhost:8080.
 
 Contributing:
+
 Feel free to contribute by submitting issues, feature requests, or pull requests. Your input is valuable for the continuous improvement of VoAr.
