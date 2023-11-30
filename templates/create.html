@@ -1,0 +1,25 @@
+{{ define "create"}}
+<!-- Define the "create" template -->
+
+{{ template "Header"}} <!-- Include the "Header" template -->
+
+<main role="main" class="inner cover">
+    <h1 class="cover-heading">Write Article</h1>
+    <form action="/save_article" method="post">
+        <!-- Form for creating a new article with input fields for title, anons, and full_text -->
+        <input type="text" name="title" id="title" placeholder="Write Name of Item" class="form-control"><br>
+        <!-- Input field for the title of the article -->
+        <textarea name="anons" id="anons" class="form-control" placeholder="Enter Anons Content"></textarea><br>
+        <!-- Textarea for the anons (summary) of the article -->
+        <textarea name="full_text" id="full_text" class="form-control" placeholder="Enter Comment Content"></textarea><br>
+        <!-- Textarea for the full text of the article -->
+        <button class="btn btn-warning">Add</button>
+        <!-- Button to submit the form and add the article -->
+    </form>
+</main>
+
+<hr class="Ar">
+
+{{ template "Footer"}} <!-- Include the "Footer" template -->
+
+{{ end }}

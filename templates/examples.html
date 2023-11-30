@@ -1,0 +1,33 @@
+{{ define "examples"}}
+<!-- Define the "examples" template -->
+
+{{ template "Header"}} <!-- Include the "Header" template -->
+
+<main role="main" class="inner cover">
+    <h1 class="cover-heading">Examples</h1>
+
+    <hr class="Ar">
+    
+    <h2 class="cover-heading">Add Articles</h2>
+    <!-- Link to the page where users can write articles -->
+    <a href="/create" class="nav-link">You can write articles</a>
+
+    <hr>
+    
+    <h2 class="cover-heading">See Articles</h2>
+    <!-- Link to the page where users can see articles -->
+    <a href="/post" class="nav-link">You can see articles there</a>
+</main>
+
+<hr>
+
+<h2 class="cover-heading">Chat</h2>
+<!-- Link to the page where users can access the chat -->
+<a href="/chat" class="nav-link">You can see chat there</a>
+</main>
+
+<hr class="Ar">
+
+{{ template "Footer"}} <!-- Include the "Footer" template -->
+
+{{ end }}

@@ -1,0 +1,22 @@
+{{ define "show" }}
+<!-- Define the "show" template -->
+
+{{ template "Header" }} <!-- Include the "Header" template -->
+
+<main role="main" class="inner cover">
+    <!-- Main content section for displaying a single post -->
+    <h1 class="cover-heading">{{ .Title }}</h1>
+    <!-- Display the title of the post -->
+    <p class="lead">{{ .Full_Text }}</p>
+    <!-- Display the full text of the post -->
+    <p class="lead">
+        <a href="/post" class="btn btn-lg btn-secondary">Back</a>
+        <!-- Button to navigate back to the post list -->
+    </p>
+</main>
+
+<hr class="Ar">
+
+{{ template "Footer" }} <!-- Include the "Footer" template -->
+
+{{ end }}

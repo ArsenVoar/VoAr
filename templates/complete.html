@@ -1,0 +1,11 @@
+{{ define "complete"}}
+<!-- Define the "complete" template -->
+
+{{ template "Header"}} <!-- Include the "Header" template -->
+
+<h1>Welcome, {{.Name}}!</h1> <!-- Display a welcome message with the user's name -->
+<p>Email: {{.Email}}</p>   <!-- Display the user's email -->
+
+{{ template "Footer"}} <!-- Include the "Footer" template -->
+
+{{ end }}

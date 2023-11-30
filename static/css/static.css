@@ -1,0 +1,36 @@
+/* Adjust body padding for top and bottom */
+body {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+/* Position the carousel caption at a specific distance from the bottom */
+.carousel-caption {
+  bottom: 3rem;
+  z-index: 10; /* Ensure the caption is on top of other elements */
+}
+
+/* Set a fixed height for each carousel item */
+.carousel-item {
+  height: 30rem;
+}
+
+/* Additional styling for the text within the carousel caption */
+.carousel-caption p {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Flex display for the carousel inner to wrap items */
+.carousel-inner {
+  display: flex;
+  flex-flow: wrap;
+}
+ 
+/* Styling for the horizontal line (hr) */
+hr.Ar {
+  border-color: black; /* Set the border color */
+  background-color: black; /* Set the background color */
+  height: 10px; /* Set the height of the line */
+}
