@@ -23,8 +23,9 @@ cd VoAr |
 
 Set Up Environment Variables:
 
-Create a .env file (and name it st.env) in the project root.
-Add the necessary environment variables for database connection, Google OAuth credentials, etc.
+Create a .env file (and name it st.env) in the project root.sql
+Add the necessary environment variables for Google OAuth credentials, etc.
+For PostgreSQL database you can do your own or import from file mydb.
 Install Dependencies:
 
 bash |
