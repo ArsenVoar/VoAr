@@ -77,7 +77,7 @@ func Google() {
 
 	//Handling the root URL, rendering the main page template
 	p.Get("/", func(res http.ResponseWriter, req *http.Request) {
-		t, err := template.ParseFiles("templates/mainPage.html")
+		t, err := template.ParseFiles("cmd/pkg/app/templates/mainPage.html")
 		if err != nil {
 			http.Error(res, "Internal server error", http.StatusInternalServerError)
 			log.Printf("Error parsing template: %v", err)
