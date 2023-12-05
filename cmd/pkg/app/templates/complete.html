@@ -3,8 +3,17 @@
 
 {{ template "Header"}} <!-- Include the "Header" template -->
 
-<h1>Welcome, {{.Name}}!</h1> <!-- Display a welcome message with the user's name -->
-<p>Email: {{.Email}}</p>   <!-- Display the user's email -->
+<div class="container">
+    <h1>Welcome, {{.Name}}!</h1> <!-- Display a welcome message with the user's name -->
+    <p>Email: {{.Email}}</p>   <!-- Display the user's email -->
+
+    <!-- Add a form to submit user data to the server -->
+    <form action="/save_user" method="post">
+        <input type="hidden" name="name" value="{{.Name}}">
+        <input type="hidden" name="email" value="{{.Email}}">
+        <button type="submit" class="btn btn-primary">Save User</button>
+    </form>
+</div>
 
 {{ template "Footer"}} <!-- Include the "Footer" template -->
 

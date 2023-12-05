@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/mux"           // Package for HTTP request multiplexer (router)
 	"github.com/markbates/goth"        // Package for multi-provider authentication
@@ -56,9 +57,11 @@ func HandleFunc(db *sql.DB) *http.Server {
 	//Handling different routes with corresponding HTTP methods
 	router.HandleFunc("/", mainPage).Methods("GET")
 	router.HandleFunc("/create", create).Methods("GET")
-	router.HandleFunc("/complete", complete).Methods("GET")
 	router.HandleFunc("/examples", examples).Methods("GET")
 	router.HandleFunc("/chat", chat).Methods("GET")
+	router.HandleFunc("/complete", complete).Methods("GET")
+	router.HandleFunc("/userSavedSuccesfull", userSavedSuccesfull).Methods("GET")
+	router.HandleFunc("/userExists", userExists).Methods("GET")
 
 	//Handling the "/post" endpoint with the post function
 	router.HandleFunc("/post", func(w http.ResponseWriter, r *http.Request) {
@@ -140,6 +143,35 @@ func HandleFunc(db *sql.DB) *http.Server {
 		//Executing  the Google-Sign-In template and writing the output to the response writer
 		t.ExecuteTemplate(w, "googleSignIn", nil)
 	}).Methods("GET")
+
+	// Handle the "save_user" endpoint for saving user data to the database
+	router.HandleFunc("/save_user", func(w http.ResponseWriter, r *http.Request) {
+		// Retrieve the database connection from the request context
+		db := r.Context().Value(dbKey).(*sql.DB)
+
+		// Retrieve user data
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+
+		// Save user data to the database
+		err := saveUsersToDB(w, r, db, goth.User{Name: name, Email: email})
+		if err != nil {
+			// Check for a custom error indicating duplicate user
+			if strings.Contains(err.Error(), "user with the same name or email already exists") {
+				// Redirect the user to the "userExists" page
+				http.Redirect(w, r, "/userExists", http.StatusSeeOther)
+				return
+			}
+
+			// Handling other errors by returning an internal server error response
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			log.Printf("Error saving user data to the database: %v", err)
+			return
+		}
+
+		// Redirect the user to the "complete" page
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}).Methods("POST")
 
 	// Serving static files from the "/static/" directory
 	staticFileDirectory := http.Dir("./static/")

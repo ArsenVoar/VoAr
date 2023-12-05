@@ -2,12 +2,15 @@ package app
 
 import (
 	"database/sql"
+	"errors"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/lib/pq"
+	"github.com/markbates/goth"
 )
 
 // contextKey is a custom type for convience when using it in yhe context
@@ -78,6 +81,40 @@ func create(w http.ResponseWriter, r *http.Request) {
 
 	// Executing the create page template and writing the output to the response writer
 	t.ExecuteTemplate(w, "create", nil)
+}
+
+// userSavedSuccesfull handles the case where user data is succesfully saved to the database
+// It parses the template files for the userSavedSuccesfull, header, and footer,
+// Handles potential errors, and executes the create page template.
+func userSavedSuccesfull(w http.ResponseWriter, r *http.Request) {
+	// Parsing HTML template files for the userSavedSuccesfull, header, and footer
+	t, err := template.ParseFiles("cmd/pkg/app/templates/userSavedSuccesfull.html", "cmd/pkg/app/templates/header.html", "cmd/pkg/app/templates/footer.html")
+	if err != nil {
+		// Handling template parsing error by returning an internal server error response
+		http.Error(w, "Error interesting data", http.StatusInternalServerError)
+		log.Printf("Error scanning data into database: %v", err)
+		return
+	}
+
+	// Executing the userSavedSuccesfull template and writing the output to the response writer
+	t.ExecuteTemplate(w, "userSavedSuccesfull", nil)
+}
+
+// userExists handles the case where a user with the same name or email already exists
+// It parses the template files for the userExists, header, and footer
+// Handles potential errors, and executes the create page template
+func userExists(w http.ResponseWriter, r *http.Request) {
+	// Parsing HTML template files for the userExists, header, and footer
+	t, err := template.ParseFiles("cmd/pkg/app/templates/userExists.html", "cmd/pkg/app/templates/header.html", "cmd/pkg/app/templates/footer.html")
+	if err != nil {
+		// Handling template parsing error by returning an internal server error response
+		http.Error(w, "Error interesting data", http.StatusInternalServerError)
+		log.Printf("Error scanning data into database: %v", err)
+		return
+	}
+
+	// Executing the userExists page template and writing the output to the response writer
+	t.ExecuteTemplate(w, "userExists", nil)
 }
 
 // save_article is an HTTP handler function for saving an article to the database
@@ -285,4 +322,20 @@ func chat(w http.ResponseWriter, r *http.Request) {
 
 	//Executing the chat template and writing the output to the response writer
 	t.ExecuteTemplate(w, "chat", nil)
+}
+
+func saveUsersToDB(w http.ResponseWriter, r *http.Request, db *sql.DB, user goth.User) error {
+	_, err := db.Exec("INSERT INTO users (name, email) VALUES ($1, $2)", user.Name, user.Email)
+	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" { // PostgreSQL error
+				return errors.New("user with the same name or email already exists")
+			}
+		}
+		// Other error
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		log.Printf("Error saving user data to the database: %v", err)
+		return err
+	}
+	return nil
 }
