@@ -1,6 +1,7 @@
 package app
 
 import (
+	"VoAr/internal/app"
 	"database/sql"
 	"fmt"
 	"html/template"
@@ -52,36 +53,36 @@ func HandleFunc(db *sql.DB) *http.Server {
 	router := mux.NewRouter()
 
 	//Using the dbMiddleware to inject the database into the request context
-	router.Use(dbMiddleware(db, router))
+	router.Use(app.DbMiddleware(db, router))
 
 	//Handling different routes with corresponding HTTP methods
-	router.HandleFunc("/", mainPage).Methods("GET")
-	router.HandleFunc("/create", create).Methods("GET")
-	router.HandleFunc("/examples", examples).Methods("GET")
-	router.HandleFunc("/chat", chat).Methods("GET")
-	router.HandleFunc("/complete", complete).Methods("GET")
-	router.HandleFunc("/userSavedSuccesfull", userSavedSuccesfull).Methods("GET")
-	router.HandleFunc("/userExists", userExists).Methods("GET")
+	router.HandleFunc("/", app.MainPage).Methods("GET")
+	router.HandleFunc("/create", app.Create).Methods("GET")
+	router.HandleFunc("/examples", app.Examples).Methods("GET")
+	router.HandleFunc("/chat", app.Chat).Methods("GET")
+	router.HandleFunc("/complete", app.Complete).Methods("GET")
+	router.HandleFunc("/userSavedSuccesfull", app.UserSavedSuccesfull).Methods("GET")
+	router.HandleFunc("/userExists", app.UserExists).Methods("GET")
 
 	//Handling the "/post" endpoint with the post function
 	router.HandleFunc("/post", func(w http.ResponseWriter, r *http.Request) {
 		//Retrieving the database connection from the request context
-		db = r.Context().Value(dbKey).(*sql.DB)
-		post(w, r, db)
+		db = r.Context().Value(app.DbKey).(*sql.DB)
+		app.Post(w, r, db)
 	}).Methods("GET")
 
 	//Handling the "/show/{id:{0-9}+}" endpoint with the showPost function
 	router.HandleFunc("/show/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		//Retrieving the database connection from the request context
-		db = r.Context().Value(dbKey).(*sql.DB)
-		showPost(w, r, db)
+		db = r.Context().Value(app.DbKey).(*sql.DB)
+		app.ShowPost(w, r, db)
 	}).Methods("GET")
 
 	//Handling the "/save_article" endpoint with the save_article function
 	router.HandleFunc("/save_article", func(w http.ResponseWriter, r *http.Request) {
 		//Retrieving the database connection from the request context
-		db = r.Context().Value(dbKey).(*sql.DB)
-		save_article(w, r)
+		db = r.Context().Value(app.DbKey).(*sql.DB)
+		app.Save_article(w, r)
 	}).Methods("POST")
 
 	//Handling 	authentication using third-party providers (0Auth)
@@ -105,7 +106,7 @@ func HandleFunc(db *sql.DB) *http.Server {
 	//Handling the "/googleSignIn" endpoit for Google-Sing-In
 	router.HandleFunc("/googleSignIn", func(w http.ResponseWriter, r *http.Request) {
 		// Parsing HTML template files for the Google Sign-In page, header, and footer
-		t, err := template.ParseFiles("cmd/pkg/app/templates/googleSignIn.html", "cmd/pkg/app/templates/header.html", "cmd/pkg/app/templates/footer.html")
+		t, err := template.ParseFiles("web/templates/googleSignIn.html", "web/templates/header.html", "web/templates/footer.html")
 		if err != nil {
 			// Handling template parsing error by returning an internal server error response
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -129,7 +130,7 @@ func HandleFunc(db *sql.DB) *http.Server {
 			}
 
 			// Parsing HTML template files for the completion page, header, and footer
-			t, err := template.ParseFiles("cmd/pkg/app/templates/complete.html", "cmd/pkg/app/templates/header.html", "cmd/pkg/app/templates/footer.html")
+			t, err := template.ParseFiles("VoAr/web/templates/complete.html", "VoAr/web/templates/header.html", "VoAr/web/templates/footer.html")
 			if err != nil {
 				// Handling template parsing error by returning an internal server error response
 				http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -147,14 +148,14 @@ func HandleFunc(db *sql.DB) *http.Server {
 	// Handle the "save_user" endpoint for saving user data to the database
 	router.HandleFunc("/save_user", func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve the database connection from the request context
-		db := r.Context().Value(dbKey).(*sql.DB)
+		db := r.Context().Value(app.DbKey).(*sql.DB)
 
 		// Retrieve user data
 		name := r.FormValue("name")
 		email := r.FormValue("email")
 
 		// Save user data to the database
-		err := saveUsersToDB(w, r, db, goth.User{Name: name, Email: email})
+		err := app.SaveUsersToDB(w, r, db, goth.User{Name: name, Email: email})
 		if err != nil {
 			// Check for a custom error indicating duplicate user
 			if strings.Contains(err.Error(), "user with the same name or email already exists") {

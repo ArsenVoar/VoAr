@@ -1,10 +1,9 @@
 package main
 
 import (
-	google "VoAr/cmd/pkg" //Importing the Google package for authentication
-	"VoAr/cmd/pkg/app"    //Importing the app package (assuming it handles application-specific logic)
-	"fmt"
-	"log" //Package for logging
+	"VoAr/app"               //Importing the app package (assuming it handles application-specific logic)
+	google "VoAr/pkg/google" //Importing the Google package for authentication
+	"log"                    //Package for logging
 
 	"github.com/joho/godotenv" //Package for loading environment variables from a .env file.
 	_ "github.com/lib/pq"      //PostgreSQL driver for the database/sql package
@@ -15,11 +14,11 @@ import (
 // And starts the HTTP server to handle incoming requests
 func main() {
 	// Load environment variables from the specified file
-	err := godotenv.Load("C:/Arsen/VSC/Projects/VoAr/st.env")
+	err := godotenv.Load("configs/.env")
 	if err != nil {
-		fmt.Println("Error loading .env:", err)
-		return
+		log.Fatal("Error loading .env file:", err)
 	}
+
 	//Initializing the database connection
 	db, err := app.InitDB()
 	if err != nil {

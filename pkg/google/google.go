@@ -18,7 +18,7 @@ import (
 // Google function configures and sets up Google authentication using the Goth package.
 func Google() {
 	// Loading environment variables from the specified file
-	err := godotenv.Load("C:/Arsen/VSC/Projects/VoAr/st.env")
+	err := godotenv.Load("C:/Arsen/VSC/Projects/VoAr/.env")
 	if err != nil {
 		log.Printf("Error loading .env file: %v", err)
 	}
@@ -77,7 +77,7 @@ func Google() {
 
 	//Handling the root URL, rendering the main page template
 	p.Get("/", func(res http.ResponseWriter, req *http.Request) {
-		t, err := template.ParseFiles("cmd/pkg/app/templates/mainPage.html")
+		t, err := template.ParseFiles("web/templates/mainPage.html")
 		if err != nil {
 			http.Error(res, "Internal server error", http.StatusInternalServerError)
 			log.Printf("Error parsing template: %v", err)
