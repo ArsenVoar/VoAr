@@ -30,7 +30,7 @@ Clone the VoAr repository to your local machine.
 
 Configure the environment variables, including Google OAuth credentials and database connection details, in the .env file.
 
-Run the application using the go run main.go command.
+Run the application using the "go run VoAr/cmd/voar main.go" command.
 
 Access the application through the provided URL and explore the user registration features.
 
