@@ -174,10 +174,9 @@ func HandleFunc(db *sql.DB) *http.Server {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}).Methods("POST")
 
-	// Serving static files from the "/static/" directory
-	staticFileDirectory := http.Dir("./static/")
-	staticFileHandler := http.StripPrefix("/static/", http.FileServer(staticFileDirectory))
-	router.PathPrefix("/static/").Handler(staticFileHandler)
+	// Serving static files from the "/css/" directory
+	staticFileDirectory := http.Dir("web/css")
+	router.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(staticFileDirectory)))
 
 	//Creating an HTTP server instance with the configured router
 	server := &http.Server{

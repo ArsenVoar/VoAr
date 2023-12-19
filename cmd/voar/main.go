@@ -14,7 +14,7 @@ import (
 // And starts the HTTP server to handle incoming requests
 func main() {
 	// Load environment variables from the specified file
-	err := godotenv.Load("configs/.env")
+	err := godotenv.Load("st.env")
 	if err != nil {
 		log.Fatal("Error loading .env file:", err)
 	}

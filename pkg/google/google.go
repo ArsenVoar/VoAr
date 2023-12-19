@@ -18,7 +18,7 @@ import (
 // Google function configures and sets up Google authentication using the Goth package.
 func Google() {
 	// Loading environment variables from the specified file
-	err := godotenv.Load("C:/Arsen/VSC/Projects/VoAr/.env")
+	err := godotenv.Load("st.env")
 	if err != nil {
 		log.Printf("Error loading .env file: %v", err)
 	}
