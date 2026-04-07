@@ -1,0 +1,18 @@
+{{ define "profile" }}
+<!-- Define the "profile" template -->
+
+{{ template "Header" }} <!-- Include the "Header" template -->
+
+    <div>
+        <h2>User Profile</h2>
+        <p>ID: {{.Id}}</p>
+        <p>Name: {{.Name}}</p>
+        <p>Email: {{.Email}}</p>
+        <!-- Add more details or customize the layout as needed -->
+    </div>
+
+    <!-- Include the footer template -->
+    {{ template "Footer" }} <!-- Include the "Footer" template -->
+
+    {{ end }}
+    

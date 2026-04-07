@@ -67,12 +67,11 @@ ALTER TABLE ONLY public.articles ALTER COLUMN id SET DEFAULT nextval('public.art
 -- Data for Name: articles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.articles (id, title, anons, full_text) FROM stdin;
-1	assa	as	as
-2	sa	as	sa
-3	ass	asas	asas
-4	a	a	a
-\.
+INSERT INTO public.articles (id, title, anons, full_text) VALUES
+(1, 'assa', 'as', 'as'),
+(2, 'sa', 'as', 'sa'),
+(3, 'ass', 'asas', 'asas'),
+(4, 'a', 'a', 'a');
 
 
 --
