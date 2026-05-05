@@ -1,23 +1,21 @@
 {{ define "post" }}
-<!-- Define the "post" template -->
 
-{{ template "Header" }} <!-- Include the "Header" template -->
+{{ template "Header" . }}
 
 <main role="main" class="inner cover">
-    <!-- Main content section with a loop over the data -->
-    {{ range . }}
-        <!-- Alert div for each post with title, anons, and a "Read more" button -->
-        <div class="alert alert-danger">
-            <h2>{{ .Title }}</h2>
-            <!-- Display the title of the post -->
-            <p>{{ .Anons }}</p>
-            <!-- Display the anons (summary) of the post -->
-            <a href="/show/{{ .Id }}" class="btn btn-danger">Read more</a>
-            <!-- Button to navigate to the full post -->
-        </div>
-    {{ end }}
+{{ if . }}
+  {{ range .Data }}
+    <div class="alert alert-danger">
+      <h2>{{ .Title }}</h2>
+      <p>{{ .Anons }}</p>
+      <a href="/show/{{ .Id }}" class="btn btn-danger">Read more</a>
+    </div>
+  {{ end }}
+{{ else }}
+  <p>No posts yet</p>
+{{ end }}
 </main>
 
-{{ template "Footer" }} <!-- Include the "Footer" template -->
+{{ template "Footer" }}
 
 {{ end }}

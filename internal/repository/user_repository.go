@@ -2,18 +2,22 @@ package repository
 
 import (
 	"VoAr/internal/models"
+	"context"
 	"database/sql"
 	"errors"
 )
+
+var ErrNotFound = errors.New("not found")
 
 type UserRepository struct {
 	DB *sql.DB
 }
 
-func (r *UserRepository) GetByID(id string) (models.User, error) {
+func (r *UserRepository) GetByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
 
-	row := r.DB.QueryRow(
+	row := r.DB.QueryRowContext(
+		ctx,
 		"SELECT id, name, email FROM users WHERE id = $1",
 		id,
 	)
@@ -29,16 +33,31 @@ func (r *UserRepository) GetByID(id string) (models.User, error) {
 	return user, nil
 }
 
-var ErrUserExists = errors.New("user already exists")
+func (r *UserRepository) GetByEmail(ctx context.Context, email string) (models.User, error) {
+	var user models.User
 
-func (r *UserRepository) Create(user models.User) error {
-	_, err := r.DB.Exec(
-		"INSERT INTO users (name, email) VALUES ($1, $2)",
-		user.Name, user.Email,
+	row := r.DB.QueryRowContext(
+		ctx,
+		"SELECT id, email, password FROM users WHERE email = $1",
+		email,
 	)
+
+	err := row.Scan(&user.Id, &user.Email, &user.Password)
 	if err != nil {
-		// обработка pq ошибки
-		return err
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.User{}, ErrNotFound
+		}
+		return models.User{}, err
 	}
-	return nil
+
+	return user, nil
+}
+
+func (r *UserRepository) CreateUser(ctx context.Context, user models.User) error {
+	_, err := r.DB.ExecContext(
+		ctx,
+		"INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
+		user.Name, user.Email, user.Password,
+	)
+	return err
 }

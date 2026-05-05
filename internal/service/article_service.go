@@ -2,19 +2,19 @@ package service
 
 import (
 	"VoAr/internal/repository"
-	"errors"
+	"context"
 )
 
 type ArticleService struct {
 	Repo *repository.ArticleRepository
 }
 
-func (s *ArticleService) Create(title, anons, fullText string) error {
+func (s *ArticleService) Create(ctx context.Context, title, anons, fullText string) error {
 	if title == "" || anons == "" || fullText == "" {
-		return errors.New("empty fields")
+		return ErrEmptyFields
 	}
 
-	err := s.Repo.Create(title, anons, fullText)
+	err := s.Repo.Create(ctx, title, anons, fullText)
 	if err != nil {
 		return err
 	}

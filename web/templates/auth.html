@@ -1,0 +1,66 @@
+{{ define "auth" }}
+
+{{ template "Header" }}
+
+<main class="form-signin w-100 m-auto" style="max-width: 400px; padding-top: 80px;">
+
+  {{ if .Error }}
+  <div class="alert alert-danger">
+    {{ .Error }}
+  </div>
+{{ end }}
+
+  <h2 class="mb-3">Login</h2>
+
+  <form method="POST" action="/login">
+    <div class="form-floating mb-2">
+      <input type="email" class="form-control" name="email" placeholder="email">
+      <label>Email</label>
+    </div>
+
+    <div class="form-floating mb-2">
+      <input type="password" class="form-control" name="password" placeholder="password">
+      <label>Password</label>
+    </div>
+
+    <button class="w-100 btn btn-primary mb-3" type="submit">
+      Login
+    </button>
+  </form>
+
+  <hr>
+
+  <h2 class="mb-3">Register</h2>
+
+  <form method="POST" action="/register">
+    <div class="form-floating mb-2">
+      <input type="text" class="form-control" name="name" placeholder="name">
+      <label>Name</label>
+    </div>
+
+    <div class="form-floating mb-2">
+      <input type="email" class="form-control" name="email" placeholder="email">
+      <label>Email</label>
+    </div>
+
+    <div class="form-floating mb-2">
+      <input type="password" class="form-control" name="password" placeholder="password">
+      <label>Password</label>
+    </div>
+
+    <button class="w-100 btn btn-success mb-3" type="submit">
+      Register
+    </button>
+  </form>
+
+  <hr>
+
+  <a href="/auth/google" class="w-100 btn btn-danger">
+    Sign in with Google
+  </a>
+
+</main>
+
+{{ template "Footer" }}
+
+{{ end }}

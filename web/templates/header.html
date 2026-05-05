@@ -1,42 +1,45 @@
 {{ define "Header" }}
-<!-- Define the "Header" template -->
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <!-- Head section with metadata and title -->
   <meta charset="UTF-8" />
   <title>Document</title>
 
-  <!-- Link to external stylesheets -->
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/css/static.css">  
 </head>
 
 <body>
-  <!-- Header section with top navigation bar -->
   <header class="top-navigation">
-    <!-- Navigation bar with dark background -->
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <div class="container-fluid">
-        <!-- Brand/logo on the left side of the navbar -->
-        <a href="#" class="navbar-brand">AV</a>
+        <a href="#" class="navbar-brand">VoAr</a>
 
-        <!-- Navigation links and toggler button for small screens -->
         <div class="collapse navbar-collapse" id="navbarCollapse">
-          <ul class="navbar-nav me-auto mb-2 mb-md-0">
-            <!-- Navigation links -->
-            <li class="nav-item">
-              <a href="/" class="nav-link active">Home</a>
-            </li>
-            <li class="nav-item">
-              <a href="/profile/{{ .Id }}" class="nav-link active">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a href="/examples" class="nav-link">Examples</a>
-            </li>
-          </ul>
+<ul class="navbar-nav me-auto mb-2 mb-md-0">
+  <li class="nav-item">
+    <a href="/" class="nav-link active">Home</a>
+  </li>
+
+{{ if .IsAuth }}
+  <li class="nav-item">
+    <a href="/profile/{{ .UserID }}" class="nav-link active">Profile</a>
+  </li>
+  <li class="nav-item">
+    <a href="/logout" class="nav-link">Logout</a>
+  </li>
+{{ else }}
+  <li class="nav-item">
+    <a href="/auth" class="nav-link active">Login</a>
+  </li>
+{{ end }}
+
+  <li class="nav-item">
+    <a href="/examples" class="nav-link">Examples</a>
+  </li>
+</ul>
         </div>
       </div>
     </nav>

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 )
@@ -9,8 +10,9 @@ type ArticleRepository struct {
 	DB *sql.DB
 }
 
-func (r *ArticleRepository) Create(title, anons, fullText string) error {
-	result, err := r.DB.Exec(
+func (r *ArticleRepository) Create(ctx context.Context, title, anons, fullText string) error {
+	result, err := r.DB.ExecContext(
+		ctx,
 		"INSERT INTO articles (title, anons, full_text) VALUES ($1, $2, $3)",
 		title, anons, fullText,
 	)

@@ -8,19 +8,13 @@ import (
 
 	"github.com/gorilla/pat"
 	"github.com/gorilla/sessions"
-	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
 )
 
 func Google() {
-	err := godotenv.Load("st.env")
-	if err != nil {
-		log.Printf("Error loading .env file: %v", err)
-	}
-
-	sessionKey := os.Getenv("SESSION_KEY")
+	sessionKey := os.Getenv("SESSION_SECRET")
 	maxAge := 86400 * 30
 	isProd := false
 

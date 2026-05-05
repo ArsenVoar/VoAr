@@ -1,55 +1,43 @@
 package handler
 
 import (
-	"VoAr/internal/contextkeys"
-	"VoAr/internal/repository"
 	"VoAr/internal/service"
-	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/markbates/goth/gothic"
 )
 
-func UserProfile(w http.ResponseWriter, r *http.Request) {
-	ctxDB := r.Context().Value(contextkeys.DbKey).(*sql.DB)
-
+func (h *Handler) UserProfile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
-	repo := &repository.UserRepository{DB: ctxDB}
-	svc := &service.UserService{Repo: repo}
-
-	session, err := gothic.Store.Get(r, "session-name")
+	session, err := h.Store.Get(r, "session-name")
 	if err != nil {
-		log.Printf("Error getting session: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		log.Printf("session get error: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	sessionUserID, ok := session.Values["userId"].(string)
-	if !ok {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
+	sessionUserID := fmt.Sprintf("%v", session.Values["userId"])
 
-	user, err := svc.GetProfile(vars["id"], sessionUserID)
+	ctx := r.Context()
+
+	user, err := h.UserService.GetProfile(ctx, vars["id"], sessionUserID)
 	if err != nil {
-		if errors.Is(err, service.ErrUserNotFound) {
-			http.Error(w, "User not found", http.StatusNotFound)
-			return
-		}
+		switch {
+		case errors.Is(err, service.ErrUserNotFound):
+			http.Error(w, "user not found", http.StatusNotFound)
 
-		if errors.Is(err, service.ErrUnauthorized) {
+		case errors.Is(err, service.ErrUnauthorized):
 			http.Redirect(w, r, "/", http.StatusSeeOther)
-			return
-		}
 
-		log.Printf("Error getting profile: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		default:
+			log.Printf("internal error: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 		return
 	}
 
-	renderTemplate(w, "profile", user)
+	h.renderTemplate(w, "profile", user, "", r)
 }

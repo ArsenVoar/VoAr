@@ -3,6 +3,8 @@ package service
 import (
 	"VoAr/internal/models"
 	"VoAr/internal/repository"
+	"context"
+	"errors"
 	"strconv"
 )
 
@@ -10,7 +12,18 @@ type PostService struct {
 	Repo *repository.PostRepository
 }
 
-func (s *PostService) GetPosts(pageParam string) ([]models.Post, error) {
+func (s *PostService) GetPost(ctx context.Context, id string) (models.Post, error) {
+	post, err := s.Repo.GetPostById(ctx, id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return models.Post{}, ErrNotFound
+		}
+		return models.Post{}, err
+	}
+	return post, nil
+}
+
+func (s *PostService) GetPosts(ctx context.Context, pageParam string) ([]models.Post, error) {
 	page := 1
 	pageSize := 10
 
@@ -22,7 +35,7 @@ func (s *PostService) GetPosts(pageParam string) ([]models.Post, error) {
 		page = p
 	}
 
-	posts, err := s.Repo.GetPosts(page, pageSize)
+	posts, err := s.Repo.GetPosts(ctx, page, pageSize)
 	if err != nil {
 		return nil, err
 	}

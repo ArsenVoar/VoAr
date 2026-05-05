@@ -1,6 +1,6 @@
 module VoAr
 
-go 1.19
+go 1.25.0
 
 require (
 	github.com/gorilla/mux v1.8.1
@@ -19,5 +19,7 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
+
+require golang.org/x/crypto v0.50.0
 
 require cloud.google.com/go v0.67.0 // indirect

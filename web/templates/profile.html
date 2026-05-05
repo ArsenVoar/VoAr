@@ -1,18 +1,16 @@
 {{ define "profile" }}
-<!-- Define the "profile" template -->
 
-{{ template "Header" }} <!-- Include the "Header" template -->
+{{ template "Header" . }}
+<main style="padding-top: 80px;">
+  <h2>User Profile</h2>
 
-    <div>
-        <h2>User Profile</h2>
-        <p>ID: {{.Id}}</p>
-        <p>Name: {{.Name}}</p>
-        <p>Email: {{.Email}}</p>
-        <!-- Add more details or customize the layout as needed -->
-    </div>
-
-    <!-- Include the footer template -->
-    {{ template "Footer" }} <!-- Include the "Footer" template -->
+  <div class="card p-3">
+    <p><strong>ID:</strong> {{.Id}}</p>
+    <p><strong>Name:</strong> {{.Name}}</p>
+    <p><strong>Email:</strong> {{.Email}}</p>
+  </div>
+</main>
+    {{ template "Footer" }}
 
     {{ end }}
     

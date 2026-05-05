@@ -1,7 +1,7 @@
 {{ define "mainPage"}}
 <!-- Define the "mainPage" template -->
 
-{{ template "Header"}} <!-- Include the "Header" template -->
+{{ template "Header" .}} <!-- Include the "Header" template -->
 
 <main>
   <!-- Main content section -->
@@ -18,7 +18,7 @@
         <!-- Caption for the carousel item -->
         <h1>Voar</h1>
         <p>Hi! My name Arsen Voar and this is my own site</p>
-        <p><a class="btn btn-lg btn-primary" href="/googleSignIn">Sign up today</a></p>
+        <p><a class="btn btn-lg btn-primary" href="/auth">Sign up today</a></p>
       </div>
     </div>
   </div>
@@ -110,7 +110,7 @@
           Doloremque, id voluptas! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Repellat quis laudantium dolorum
           voluptate? Cum quasi tempore rerum aspernatur at obcaecati quia! Quod omnis earum beatae ex fuga quaerat cum a.
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Assumenda minima nobis enim natus odio nesciunt. Numquam
-          porro aperiam, ipsam quod laborum nobis? Repellendus amet nesciunt ratione harum. Quae, quibusdam aspernatur.</p>
+          porro aperiam, ipsam quod laborum nobis? Repellendus amet nesciunt ratione harum. Quae, quibusdam aspernatur.
       </p>
     </div>
     <div class="col-md-5 order-md-1">
@@ -124,7 +124,6 @@
       </svg>
     </div>
   </div>
-
 </main>
 
 <hr class="Ar"> <!-- Horizontal rule with custom class -->
