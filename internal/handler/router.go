@@ -13,6 +13,10 @@ import (
 func SetupRouter(h *Handler) *http.Server {
 	router := mux.NewRouter()
 
+	router.Use(middleware.RequestIDMiddleware)
+	router.Use(middleware.TimeOutMiddleware)
+	router.Use(middleware.LoggingMiddleware)
+
 	authMiddleware := middleware.AuthMiddleware(h.Store)
 
 	api := &ApiHandler{
@@ -21,6 +25,7 @@ func SetupRouter(h *Handler) *http.Server {
 	}
 
 	router.HandleFunc("/", h.MainPage).Methods("GET")
+	router.HandleFunc("/slow", h.SlowHandler)
 	router.HandleFunc("/auth", h.AuthPage).Methods("GET")
 	router.HandleFunc("/create", h.Create).Methods("GET")
 	router.HandleFunc("/examples", h.Examples).Methods("GET")

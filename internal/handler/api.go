@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 )
 
 type ApiHandler struct {
@@ -89,4 +90,15 @@ func (h *ApiHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		"data":  posts,
 		"error": nil,
 	})
+}
+
+func (h *Handler) SlowHandler(w http.ResponseWriter, r *http.Request) {
+	select {
+	case <-time.After(10 * time.Second):
+		w.Write([]byte("slow response"))
+
+	case <-r.Context().Done():
+		http.Error(w, r.Context().Err().Error(), http.StatusRequestTimeout)
+		return
+	}
 }

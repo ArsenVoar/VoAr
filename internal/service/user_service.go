@@ -9,8 +9,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UserRepository interface {
+	GetByID(ctx context.Context, id string) (models.User, error)
+	GetByEmail(ctx context.Context, email string) (models.User, error)
+	CreateUser(ctx context.Context, user models.User) error
+}
+
 type UserService struct {
-	Repo *repository.UserRepository
+	Repo UserRepository
 }
 
 func (s *UserService) GetProfile(ctx context.Context, userId string, sessionUserID string) (models.User, error) {

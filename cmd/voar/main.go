@@ -3,11 +3,17 @@ package main
 import (
 	"VoAr/internal/database"
 	"VoAr/internal/handler"
+	"VoAr/internal/logger"
 	"VoAr/internal/repository"
 	"VoAr/internal/service"
 	google "VoAr/pkg/google"
+	"context"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
@@ -52,7 +58,36 @@ func main() {
 
 	server := handler.SetupRouter(h)
 
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatal("Server error:", err)
+	logger.Info("starting VoAr server")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(
+		quit,
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+
+	go func() {
+		err := server.ListenAndServe()
+
+		if err != nil && err != http.ErrServerClosed {
+			logger.Error(err.Error())
+		}
+	}()
+
+	<-quit
+	logger.Info("shutdown signal received")
+
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		5*time.Second,
+	)
+	defer cancel()
+
+	err = server.Shutdown(ctx)
+	if err != nil {
+		logger.Error(err.Error())
+	} else {
+		logger.Info("VoAr server stopped")
 	}
 }
