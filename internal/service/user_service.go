@@ -1,6 +1,8 @@
 package service
 
 import (
+	"VoAr/internal/contextkeys"
+	"VoAr/internal/logger"
 	"VoAr/internal/models"
 	"VoAr/internal/repository"
 	"context"
@@ -17,6 +19,7 @@ type UserRepository interface {
 
 type UserService struct {
 	Repo UserRepository
+	DB   TransactionManager
 }
 
 func (s *UserService) GetProfile(ctx context.Context, userId string, sessionUserID string) (models.User, error) {
@@ -39,13 +42,37 @@ func (s *UserService) Register(ctx context.Context, user models.User) error {
 	if user.Email == "" || user.Password == "" {
 		return ErrInvalidInput
 	}
+	committed := false
 
-	_, err := s.Repo.GetByEmail(ctx, user.Email)
+	requestID := contextkeys.GetRequestID(ctx)
+
+	tx, err := s.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	logger.TransactionStarted(requestID)
+
+	defer func() {
+		if !committed {
+			tx.Rollback()
+			logger.TransactionRollback(requestID, err)
+		}
+	}()
+
+	txRepo := &repository.UserRepository{
+		DB: tx,
+	}
+
+	_, err = txRepo.GetByEmail(ctx, user.Email)
 	if err == nil {
-		return ErrUserExists
+		err = ErrUserExists
+		logger.TransactionFailed(requestID, err)
+		return err
 	}
 
 	if !errors.Is(err, repository.ErrNotFound) {
+		logger.TransactionFailed(requestID, err)
 		return err
 	}
 
@@ -54,15 +81,27 @@ func (s *UserService) Register(ctx context.Context, user models.User) error {
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
+		logger.TransactionFailed(requestID, err)
 		return err
 	}
 
 	user.Password = string(hashedPassword)
 
-	err = s.Repo.CreateUser(ctx, user)
+	err = txRepo.CreateUser(ctx, user)
 	if err != nil {
+		logger.TransactionFailed(requestID, err)
 		return err
 	}
+
+	err = tx.Commit()
+	if err != nil {
+		logger.TransactionFailed(requestID, err)
+		return err
+	}
+
+	committed = true
+
+	logger.TransactionCommitted(requestID)
 
 	return nil
 }

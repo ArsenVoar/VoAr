@@ -3,6 +3,7 @@ package service
 import (
 	"VoAr/internal/models"
 	"context"
+	"database/sql"
 	"errors"
 	"testing"
 
@@ -12,6 +13,10 @@ import (
 type FakeUserRepository struct {
 	User models.User
 	Err  error
+}
+
+type FakeTransactionManager struct {
+	Err error
 }
 
 func (f *FakeUserRepository) GetByEmail(
@@ -33,6 +38,13 @@ func (f *FakeUserRepository) CreateUser(
 	user models.User,
 ) error {
 	return nil
+}
+
+func (f *FakeTransactionManager) BeginTx(
+	ctx context.Context,
+	opts *sql.TxOptions,
+) (*sql.Tx, error) {
+	return nil, f.Err
 }
 
 func TestLogin_InvalidInput(t *testing.T) {
@@ -104,10 +116,12 @@ func TestLogin_WrongPassword(t *testing.T) {
 		[]byte("correct-password"),
 		bcrypt.DefaultCost,
 	)
-	t.Fatalf(
-		"failed to hash password: %v",
-		err,
-	)
+	if err != nil {
+		t.Fatalf(
+			"failed to hash password: %v",
+			err,
+		)
+	}
 
 	fakeRepo := &FakeUserRepository{
 		User: models.User{

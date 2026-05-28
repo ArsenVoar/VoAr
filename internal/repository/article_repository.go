@@ -2,12 +2,11 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 )
 
 type ArticleRepository struct {
-	DB *sql.DB
+	DB DBTX
 }
 
 func (r *ArticleRepository) Create(ctx context.Context, title, anons, fullText string) error {

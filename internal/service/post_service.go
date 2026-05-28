@@ -4,12 +4,14 @@ import (
 	"VoAr/internal/models"
 	"VoAr/internal/repository"
 	"context"
+	"database/sql"
 	"errors"
 	"strconv"
 )
 
 type PostService struct {
 	Repo *repository.PostRepository
+	DB   *sql.DB
 }
 
 func (s *PostService) GetPost(ctx context.Context, id string) (models.Post, error) {

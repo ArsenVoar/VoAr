@@ -1,44 +1,84 @@
-package logger
+	package logger
 
-import (
-	"fmt"
-	"log"
-	"time"
-)
-
-func Info(message string) {
-	timestamp := time.Now().Format(time.RFC3339)
-
-	log.Println(
-		fmt.Sprintf(
-			"INFO %s %s",
-			timestamp,
-			message,
-		),
+	import (
+		"fmt"
+		"io"
+		"log"
+		"os"
+		"time"
 	)
-}
 
-func Error(message string) {
-	timestamp := time.Now().Format(time.RFC3339)
+	func Init() error {
+		file, err := os.OpenFile(
+			"logs/app.log",
+			os.O_CREATE|os.O_WRONLY|os.O_APPEND,
+			0666,
+		)
+		if err != nil {
+			return err
+		}
 
-	log.Println(
-		fmt.Sprintf(
-			"ERROR %s %s",
-			timestamp,
-			message,
-		),
-	)
-}
+		writer := io.MultiWriter(os.Stdout, file)
 
-func Request(requestID string, method string, path string, status int, duration time.Duration) {
-	log.Println(
-		fmt.Sprintf(
-			"REQUEST request_id=%s method=%s path=%s status=%d duration=%s",
-			requestID,
-			method,
-			path,
-			status,
-			duration.String(),
-		),
-	)
-}
+		log.SetOutput(writer)
+		log.SetFlags(0)
+
+		return nil
+	}
+
+	func Info(message string) {
+		timestamp := time.Now().Format(time.RFC3339)
+
+		log.Println(
+			fmt.Sprintf(
+				"INFO %s %s",
+				timestamp,
+				message,
+			),
+		)
+	}
+
+	func Error(message string) {
+		timestamp := time.Now().Format(time.RFC3339)
+
+		log.Println(
+			fmt.Sprintf(
+				"ERROR %s %s",
+				timestamp,
+				message,
+			),
+		)
+	}
+
+	func Request(requestID string, method string, path string, status int, duration time.Duration) {
+		log.Println(
+			fmt.Sprintf(
+				"REQUEST request_id=%s method=%s path=%s status=%d duration=%s",
+				requestID,
+				method,
+				path,
+				status,
+				duration.String(),
+			),
+		)
+	}
+
+	func TransactionStarted(requestID string) {
+		message := fmt.Sprintf("request_id=%s tx_started", requestID)
+		Info(message)
+	}
+
+	func TransactionCommitted(requestID string) {
+		message := fmt.Sprintf("request_id=%s tx_committed", requestID)
+		Info(message)
+	}
+
+	func TransactionRollback(requestID string, err error) {
+		message := fmt.Sprintf("request_id=%s tx_rollback err=%s", requestID, err)
+		Info(message)
+	}
+
+	func TransactionFailed(requestID string, err error) {
+		message := fmt.Sprintf("request_id=%s tx_failed err=%s", requestID, err)
+		Error(message)
+	}

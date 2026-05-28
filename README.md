@@ -1,48 +1,45 @@
-````markdown
 # VoAr
 
 VoAr is a production-oriented backend web application written in Go.
 
-The project was built from scratch as a personal backend engineering project focused on:
+The project focuses on backend engineering concepts including:
 
-- layered backend architecture
-- runtime infrastructure
-- request lifecycle management
-- observability
-- context propagation
-- middleware coordination
-- graceful shutdown
-- production-oriented backend engineering concepts
-
-The primary goal of the project is practical backend engineering experience, runtime systems understanding, and infrastructure-oriented portfolio development.
+* layered architecture
+* runtime infrastructure
+* middleware coordination
+* request lifecycle management
+* context propagation
+* observability
+* graceful shutdown
+* transaction handling
+* concurrent runtime coordination
 
 ---
 
 # Features
 
-## Application Features
+## Application
 
-- User registration and authentication
-- Session-based authorization
-- User profile system
-- Article creation and viewing
-- REST API endpoints
-- HTML template rendering
-- Google OAuth integration (partially implemented)
+* User registration and authentication
+* Session-based authorization
+* User profiles
+* Article and post system
+* REST API endpoints
+* HTML template rendering
+* Google OAuth integration (partial)
 
-## Backend Infrastructure Features
+## Backend Infrastructure
 
-- Layered backend architecture
-- Middleware-based runtime coordination
-- Request-scoped context propagation
-- Structured request logging
-- Request correlation with request IDs
-- Timeout middleware with bounded execution
-- Graceful shutdown lifecycle coordination
-- Runtime lifecycle observability
-- Concurrent request execution handling
-- PostgreSQL integration with cancellable queries
-- Docker and docker-compose support
+* Request-scoped context propagation
+* Structured request logging
+* Request correlation with request IDs
+* Timeout middleware
+* Graceful shutdown
+* Transaction lifecycle logging
+* Context-aware database queries
+* Concurrent request handling
+* Middleware-driven runtime coordination
+* Docker support
 
 ---
 
@@ -50,41 +47,30 @@ The primary goal of the project is practical backend engineering experience, run
 
 ## Backend
 
-- Go
-- PostgreSQL
-- REST API
+* Go
+* PostgreSQL
+* REST API
 
 ## Infrastructure
 
-- Docker
-- docker-compose
+* Docker
+* docker-compose
 
 ## Libraries
 
-- gorilla/mux
-- gorilla/sessions
-- bcrypt
-- lib/pq
-
-## Runtime Infrastructure
-
-- Context propagation
-- Middleware architecture
-- Structured logging
-- Request correlation
-- Timeout middleware
-- Graceful shutdown
+* gorilla/mux
+* gorilla/sessions
+* bcrypt
+* lib/pq
 
 ---
 
 # Runtime Architecture
 
-VoAr uses a layered backend architecture combined with middleware-driven runtime infrastructure.
-
-## Request Runtime Flow
+Request lifecycle flow:
 
 ```text
-request
+Request
 → RequestIDMiddleware
 → TimeoutMiddleware
 → LoggingMiddleware
@@ -92,26 +78,23 @@ request
 → Service
 → Repository
 → PostgreSQL
-````
+```
 
-## Application Lifecycle Flow
+Application lifecycle flow:
 
 ```text
-application startup
-→ runtime execution
-→ request handling
-→ concurrent request processing
-→ graceful shutdown signal
-→ request draining
-→ cleanup
-→ runtime termination
+Startup
+→ Runtime execution
+→ Concurrent request handling
+→ Graceful shutdown signal
+→ Request draining
+→ Cleanup
+→ Shutdown
 ```
 
 ---
 
 # Layered Architecture
-
-The application uses a classic backend layering model:
 
 ```text
 Handler → Service → Repository → Database
@@ -122,184 +105,132 @@ Handler → Service → Repository → Database
 Responsible for:
 
 * HTTP request handling
-* Input extraction
-* Response generation
+* request validation
+* response generation
 * HTTP status management
-* Request context extraction
-* Request lifecycle entrypoints
 
 ## Service Layer
 
 Responsible for:
 
-* Business logic
-* Validation
-* Authorization rules
-* Error coordination
-* Request flow orchestration
+* business logic
+* authorization
+* validation
+* transaction coordination
+* runtime orchestration
 
 ## Repository Layer
 
 Responsible for:
 
-* Database access
+* database access
 * SQL execution
-* PostgreSQL interaction
-* QueryContext / ExecContext usage
-* Context-aware database operations
-
-## Middleware Infrastructure Layer
-
-Responsible for:
-
-* Request correlation
-* Structured logging
-* Runtime instrumentation
-* Timeout propagation
-* Request lifecycle coordination
-* Runtime observability
-* Execution boundaries
+* context-aware queries
 
 ---
 
 # Runtime Infrastructure
 
-VoAr includes production-style runtime infrastructure patterns.
+## Context Propagation
 
-## Request Correlation
-
-Each request receives a unique request ID through middleware.
-
-Request IDs allow:
-
-* correlated request logs
-* execution flow reconstruction
-* runtime observability
-* operational debugging
-
-## Structured Logging
-
-The application implements centralized structured logging.
-
-Structured logs include:
-
-* request ID
-* HTTP method
-* request path
-* response status
-* execution duration
-* runtime lifecycle events
-
-Example:
-
-```text
-REQUEST request_id=1779452438945297900 method=GET path=/slow status=408 duration=5.0002472s
-```
-
-## Timeout Middleware
-
-VoAr implements timeout-based bounded execution protection.
-
-The timeout middleware:
-
-* creates derived timeout contexts
-* propagates deadlines across layers
-* supports cancellation-aware execution
-* protects runtime resources from uncontrolled execution
-
-This improves:
-
-* runtime predictability
-* infrastructure stability
-* resource management
-
-## Graceful Shutdown
-
-The application supports graceful runtime termination.
-
-Shutdown lifecycle includes:
-
-* SIGINT / SIGTERM handling
-* request draining
-* bounded shutdown timeout
-* coordinated runtime termination
-* lifecycle-aware infrastructure cleanup
-
-This prevents:
-
-* abrupt request interruption
-* uncontrolled runtime termination
-* inconsistent shutdown behavior
-
----
-
-# Context Propagation
-
-VoAr uses Go contexts as centralized request lifecycle propagation infrastructure.
-
-Request context flows through:
+Context flows through the entire request lifecycle:
 
 ```text
 Handler → Service → Repository → Database
 ```
 
-The propagated context carries:
+Used for:
 
-* request-scoped metadata
-* request IDs
-* cancellation signals
-* timeout deadlines
-* lifecycle coordination information
+* request cancellation
+* timeout propagation
+* graceful shutdown
+* request metadata propagation
 
-The repository layer uses:
+The project uses:
 
 * QueryContext
 * QueryRowContext
 * ExecContext
 
-This enables:
+---
 
-* request cancellation
-* timeout propagation
-* graceful shutdown coordination
-* bounded execution
-* context-aware database operations
+## Structured Logging
+
+The application includes centralized structured logging with:
+
+* request IDs
+* HTTP method/path
+* response status
+* execution duration
+* transaction lifecycle events
+* startup/shutdown events
+
+Logs are written to:
+
+* stdout
+* logs/app.log
+
+Example:
+
+```text
+REQUEST request_id=1779452438945297900 method=GET path=/auth status=200 duration=0s
+```
+
+---
+
+## Timeout Middleware
+
+The timeout middleware creates bounded request execution using Go contexts.
+
+This protects the runtime from:
+
+* uncontrolled execution
+* hanging requests
+* resource exhaustion
+
+---
+
+## Graceful Shutdown
+
+VoAr supports coordinated runtime shutdown with:
+
+* SIGINT / SIGTERM handling
+* request draining
+* bounded shutdown timeout
+* context cancellation propagation
+
+---
+
+# Testing
+
+The project includes tests for:
+
+* login service
+* middleware behavior
+* request ID propagation
+* timeout injection
+* context cancellation
+
+Run all tests:
+
+```bash
+go test ./...
+```
 
 ---
 
 # Observability
 
-VoAr includes middleware-driven runtime observability infrastructure.
-
-The application provides visibility into:
-
-* request execution lifecycle
-* timeout cancellations
-* runtime startup/shutdown events
-* request duration metrics
-* correlated execution flow
-* infrastructure lifecycle transitions
-
 The backend runtime is observable rather than operating as a black box system.
 
----
+The project provides visibility into:
 
-# Concurrency and Runtime Coordination
-
-The application runtime uses concurrent lifecycle coordination.
-
-The HTTP server executes in a dedicated goroutine while the main goroutine coordinates:
-
-* application lifecycle management
-* graceful shutdown
-* signal handling
-* runtime termination flow
-
-This separation improves:
-
-* runtime coordination
-* lifecycle management
-* infrastructure predictability
+* request lifecycle
+* timeout cancellations
+* runtime startup/shutdown
+* request duration
+* transaction lifecycle
+* middleware execution flow
 
 ---
 
@@ -308,7 +239,6 @@ This separation improves:
 ```text
 cmd/
     voar/
-        main.go
 
 internal/
     contextkeys/
@@ -332,21 +262,10 @@ web/
 
 # Run Locally
 
-## 1. Clone the repository
-
-```bash
-git clone <repository-url>
-```
-
-## 2. Create .env file
-
-Example:
+## 1. Create .env
 
 ```env
 SESSION_SECRET=your_secret
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_CALLBACK_URL=
 
 DB_HOST=localhost
 DB_PORT=5432
@@ -355,11 +274,11 @@ DB_PASSWORD=your_password
 DB_NAME=voar
 ```
 
-## 3. Run PostgreSQL
+## 2. Start PostgreSQL
 
 Make sure PostgreSQL is running locally.
 
-## 4. Start the application
+## 3. Run application
 
 ```bash
 go run ./cmd/voar
@@ -375,103 +294,43 @@ http://localhost:8080
 
 # Docker
 
-The project includes:
-
-* Dockerfile
-* docker-compose.yml
-
 Run with Docker:
 
 ```bash
 docker-compose up --build
 ```
 
-Services:
-
-* app
-* postgres
-
-The application communicates with PostgreSQL through the Docker network using the postgres service name.
-
 ---
 
-# Authentication
-
-VoAr uses session-based authentication.
-
-Features include:
-
-* cookie sessions
-* middleware authorization
-* protected routes
-* login/logout flow
-* bcrypt password hashing
-
----
-
-# Database
-
-PostgreSQL is used as the primary database.
-
-The project uses:
-
-* SQL queries
-* QueryRowContext
-* QueryContext
-* ExecContext
-* context-aware database execution
-
----
-
-# Backend Engineering Concepts Implemented
+# Backend Engineering Concepts
 
 * Layered architecture
 * Dependency injection
 * Middleware architecture
 * Request lifecycle management
 * Context propagation
-* Request correlation
 * Structured logging
 * Runtime observability
 * Timeout middleware
 * Graceful shutdown
-* Bounded execution
-* Runtime lifecycle coordination
-* Session management
+* Transaction handling
+* Concurrent runtime coordination
 * Repository pattern
-* REST API fundamentals
+* Session management
 * PostgreSQL integration
 * Docker containerization
-* Error handling
-* Pagination
-* Concurrent runtime coordination
 
 ---
 
 # Project Goal
 
-VoAr was created primarily as a backend engineering and runtime infrastructure learning project.
+VoAr was created as a backend engineering and runtime infrastructure learning project.
 
-The focus of development is:
+The main focus areas are:
 
 * backend architecture
-* runtime systems understanding
+* runtime systems
 * middleware coordination
+* observability
 * lifecycle-aware infrastructure
 * production-oriented backend engineering
-* observability
-* request lifecycle management
-* infrastructure reliability concepts
-
----
-
-# Interview Summary
-
-VoAr is a production-oriented Go backend application implementing layered architecture, middleware-driven runtime infrastructure, PostgreSQL integration, request lifecycle coordination, structured logging, timeout middleware, and graceful shutdown support.
-
-The project uses request-scoped context propagation across handlers, services, repositories, and database operations to support cancellation propagation, bounded execution, runtime observability, and coordinated lifecycle management.
-
-The backend runtime includes request correlation, structured telemetry, graceful runtime termination, concurrent request execution handling, and middleware-based runtime instrumentation.
-
-```
-```

@@ -10,7 +10,7 @@ import (
 var ErrNotFound = errors.New("not found")
 
 type UserRepository struct {
-	DB *sql.DB
+	DB DBTX
 }
 
 func (r *UserRepository) GetByID(ctx context.Context, id string) (models.User, error) {

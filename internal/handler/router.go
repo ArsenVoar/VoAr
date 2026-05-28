@@ -24,8 +24,9 @@ func SetupRouter(h *Handler) *http.Server {
 		PostService: h.PostService,
 	}
 
+	router.HandleFunc("/debug/slow", h.SlowHandler)
+
 	router.HandleFunc("/", h.MainPage).Methods("GET")
-	router.HandleFunc("/slow", h.SlowHandler)
 	router.HandleFunc("/auth", h.AuthPage).Methods("GET")
 	router.HandleFunc("/create", h.Create).Methods("GET")
 	router.HandleFunc("/examples", h.Examples).Methods("GET")

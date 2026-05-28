@@ -26,6 +26,11 @@ func main() {
 		log.Fatal("Error loading .env file:", err)
 	}
 
+	err = logger.Init()
+	if err != nil{
+		log.Fatal("Error initializing logger:", err)
+	}
+
 	db, err := database.InitDB()
 	if err != nil {
 		log.Fatal("Error initializing database:", err)
@@ -36,7 +41,7 @@ func main() {
 	postRepo := &repository.PostRepository{DB: db}
 	articleRepo := &repository.ArticleRepository{DB: db}
 
-	userSvc := &service.UserService{Repo: userRepo}
+	userSvc := &service.UserService{Repo: userRepo, DB: db}
 	postSvc := &service.PostService{Repo: postRepo}
 	articleSvc := &service.ArticleService{Repo: articleRepo}
 

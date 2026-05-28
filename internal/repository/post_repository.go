@@ -8,7 +8,7 @@ import (
 )
 
 type PostRepository struct {
-	DB *sql.DB
+	DB DBTX
 }
 
 func (r *PostRepository) GetPosts(ctx context.Context, page, pageSize int) ([]models.Post, error) {

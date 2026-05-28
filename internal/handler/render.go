@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 var tmpl = template.Must(template.ParseGlob("web/templates/*.html"))
@@ -44,15 +43,6 @@ func (h *Handler) renderTemplate(w http.ResponseWriter, name string, data interf
 
 func (h *Handler) MainPage(w http.ResponseWriter, r *http.Request) {
 	h.renderTemplate(w, "mainPage", nil, "", r)
-
-	select {
-	case <-time.After(10 * time.Second):
-		w.Write([]byte("slow response"))
-
-	case <-r.Context().Done():
-		http.Error(w, r.Context().Err().Error(), http.StatusRequestTimeout)
-		return
-	}
 }
 
 func (h *Handler) Examples(w http.ResponseWriter, r *http.Request) {
