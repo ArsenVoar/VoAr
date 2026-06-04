@@ -1,6 +1,7 @@
 package main
 
 import (
+	"VoAr/internal/cache"
 	"VoAr/internal/database"
 	"VoAr/internal/handler"
 	"VoAr/internal/logger"
@@ -27,7 +28,7 @@ func main() {
 	}
 
 	err = logger.Init()
-	if err != nil{
+	if err != nil {
 		log.Fatal("Error initializing logger:", err)
 	}
 
@@ -37,12 +38,15 @@ func main() {
 	}
 	defer db.Close()
 
+	cacheTTL := 5 * time.Minute
+	redisCache := cache.NewRedisCache("localhost:6379", cacheTTL)
+
 	userRepo := &repository.UserRepository{DB: db}
 	postRepo := &repository.PostRepository{DB: db}
 	articleRepo := &repository.ArticleRepository{DB: db}
 
 	userSvc := &service.UserService{Repo: userRepo, DB: db}
-	postSvc := &service.PostService{Repo: postRepo}
+	postSvc := &service.PostService{Repo: postRepo, Cache: redisCache}
 	articleSvc := &service.ArticleService{Repo: articleRepo}
 
 	sessionSecret := os.Getenv("SESSION_SECRET")

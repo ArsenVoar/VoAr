@@ -1,0 +1,39 @@
+INFO 2026-06-05T00:40:10+05:00 starting VoAr server
+REQUEST request_id=1780602019906441900 method=GET path=/ status=200 duration=505.1µs
+REQUEST request_id=1780602019919323700 method=GET path=/css/static.css status=200 duration=54.8496ms
+REQUEST request_id=1780602019917148700 method=GET path=/css/bootstrap.min.css status=200 duration=58.027ms
+REQUEST request_id=1780602026110520800 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1780602027804404000 method=GET path=/post status=200 duration=4.8721ms
+INFO 2026-06-05T00:40:29+05:00 request_id=1780602029563122200 cache_miss key=post:1
+INFO 2026-06-05T00:40:29+05:00 request_id=1780602029563122200 cache_miss key=post:1
+INFO 2026-06-05T00:40:29+05:00 request_id=1780602029563122200 cache_set key=post:1
+INFO 2026-06-05T00:40:29+05:00 request_id=1780602029563122200 cache_set key=post:1
+REQUEST request_id=1780602029563122200 method=GET path=/show/1 status=200 duration=16.877ms
+INFO 2026-06-05T00:40:36+05:00 request_id=1780602036935924400 cache_hit key=post:1
+INFO 2026-06-05T00:40:36+05:00 request_id=1780602036935924400 cache_hit key=post:1
+REQUEST request_id=1780602036935924400 method=GET path=/show/1 status=200 duration=1.0909ms
+INFO 2026-06-05T00:40:39+05:00 shutdown signal received
+INFO 2026-06-05T00:40:39+05:00 VoAr server stopped
+INFO 2026-06-05T00:46:13+05:00 starting VoAr server
+REQUEST request_id=1780602377527089900 method=GET path=/post status=200 duration=2.2908ms
+INFO 2026-06-05T00:46:19+05:00 request_id=1780602379195595300 cache_miss key=post:1
+INFO 2026-06-05T00:46:19+05:00 request_id=1780602379195595300 cache_set key=post:1
+REQUEST request_id=1780602379195595300 method=GET path=/show/1 status=200 duration=17.7301ms
+INFO 2026-06-05T00:46:25+05:00 shutdown signal received
+INFO 2026-06-05T00:46:25+05:00 VoAr server stopped
+INFO 2026-06-05T00:47:25+05:00 starting VoAr server
+REQUEST request_id=1780602448284282200 method=GET path=/post status=200 duration=3.5258ms
+INFO 2026-06-05T00:47:29+05:00 request_id=1780602449045974300 cache_hit key=post:1
+REQUEST request_id=1780602449045974300 method=GET path=/show/1 status=200 duration=4.85ms
+INFO 2026-06-05T00:47:30+05:00 request_id=1780602450679614900 cache_hit key=post:1
+REQUEST request_id=1780602450679614900 method=GET path=/show/1 status=200 duration=0s
+INFO 2026-06-05T00:47:33+05:00 request_id=1780602453886673100 cache_hit key=post:1
+REQUEST request_id=1780602453886673100 method=GET path=/show/1 status=200 duration=511.1µs
+INFO 2026-06-05T00:47:38+05:00 request_id=1780602458481130700 cache_hit key=post:1
+REQUEST request_id=1780602458481130700 method=GET path=/show/1 status=200 duration=509.2µs
+INFO 2026-06-05T00:47:39+05:00 request_id=1780602459514640700 cache_hit key=post:1
+REQUEST request_id=1780602459514640700 method=GET path=/show/1 status=200 duration=0s
+INFO 2026-06-05T00:47:41+05:00 request_id=1780602461375367900 cache_hit key=post:1
+REQUEST request_id=1780602461375367900 method=GET path=/show/1 status=200 duration=0s
+INFO 2026-06-05T00:47:44+05:00 shutdown signal received
+INFO 2026-06-05T00:47:44+05:00 VoAr server stopped

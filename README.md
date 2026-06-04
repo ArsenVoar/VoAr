@@ -13,6 +13,7 @@ The project focuses on backend engineering concepts including:
 * graceful shutdown
 * transaction handling
 * concurrent runtime coordination
+* caching with Redis or NoOp fallback
 
 ---
 
@@ -27,6 +28,8 @@ The project focuses on backend engineering concepts including:
 * REST API endpoints
 * HTML template rendering
 * Google OAuth integration (partial)
+* Caching of frequently accessed posts using Redis
+* Automatic fallback to NoOp cache when Redis is unavailable
 
 ## Backend Infrastructure
 
@@ -39,6 +42,8 @@ The project focuses on backend engineering concepts including:
 * Context-aware database queries
 * Concurrent request handling
 * Middleware-driven runtime coordination
+* Redis caching for improved read performance
+* Cache hit/miss/error logging
 * Docker support
 
 ---
@@ -49,6 +54,7 @@ The project focuses on backend engineering concepts including:
 
 * Go
 * PostgreSQL
+* Redis for caching
 * REST API
 
 ## Infrastructure
@@ -62,6 +68,7 @@ The project focuses on backend engineering concepts including:
 * gorilla/sessions
 * bcrypt
 * lib/pq
+* github.com/redis/go-redis/v9
 
 ---
 
@@ -76,6 +83,7 @@ Request
 → LoggingMiddleware
 → Handler
 → Service
+→ Cache (Redis or NoOp)
 → Repository
 → PostgreSQL
 ```
@@ -85,6 +93,7 @@ Application lifecycle flow:
 ```text
 Startup
 → Runtime execution
+→ Redis connection or NoOp fallback
 → Concurrent request handling
 → Graceful shutdown signal
 → Request draining
@@ -97,7 +106,7 @@ Startup
 # Layered Architecture
 
 ```text
-Handler → Service → Repository → Database
+Handler → Service → Cache → Repository → Database
 ```
 
 ## Handler Layer
@@ -117,7 +126,19 @@ Responsible for:
 * authorization
 * validation
 * transaction coordination
+* caching coordination
 * runtime orchestration
+
+## Cache Layer
+
+Responsible for:
+
+* caching frequently accessed data (posts)
+* Redis integration
+* fallback to NoOp cache if Redis is unavailable
+* logging cache hits, misses, sets, deletes, errors
+* TTL management for cache entries
+* JSON serialization/deserialization for cached data
 
 ## Repository Layer
 
@@ -136,7 +157,7 @@ Responsible for:
 Context flows through the entire request lifecycle:
 
 ```text
-Handler → Service → Repository → Database
+Handler → Service → Cache → Repository → Database
 ```
 
 Used for:
@@ -163,6 +184,7 @@ The application includes centralized structured logging with:
 * response status
 * execution duration
 * transaction lifecycle events
+* cache events: hit, miss, set, delete, error
 * startup/shutdown events
 
 Logs are written to:
@@ -173,7 +195,10 @@ Logs are written to:
 Example:
 
 ```text
-REQUEST request_id=1779452438945297900 method=GET path=/auth status=200 duration=0s
+REQUEST request_id=1780602449045974300 method=GET path=/show/1 status=200 duration=4.85ms
+INFO request_id=1780602449045974300 cache_hit key=post:1
+INFO request_id=1780602029563122200 cache_miss key=post:1
+INFO request_id=1780602029563122200 cache_set key=post:1
 ```
 
 ---
@@ -210,6 +235,7 @@ The project includes tests for:
 * request ID propagation
 * timeout injection
 * context cancellation
+* cache hits, misses, and fallback behavior
 
 Run all tests:
 
@@ -230,6 +256,7 @@ The project provides visibility into:
 * runtime startup/shutdown
 * request duration
 * transaction lifecycle
+* cache usage: hits, misses, sets, deletes, errors
 * middleware execution flow
 
 ---
@@ -241,6 +268,7 @@ cmd/
     voar/
 
 internal/
+    cache/
     contextkeys/
     database/
     handler/
@@ -272,11 +300,13 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=your_password
 DB_NAME=voar
+REDIS_ADDR=localhost:6379
+CACHE_TTL=5m
 ```
 
-## 2. Start PostgreSQL
+## 2. Start PostgreSQL and Redis
 
-Make sure PostgreSQL is running locally.
+Make sure PostgreSQL and Redis are running locally.
 
 ## 3. Run application
 
@@ -314,6 +344,7 @@ docker-compose up --build
 * Timeout middleware
 * Graceful shutdown
 * Transaction handling
+* Redis caching
 * Concurrent runtime coordination
 * Repository pattern
 * Session management
@@ -332,5 +363,6 @@ The main focus areas are:
 * runtime systems
 * middleware coordination
 * observability
+* caching strategies with Redis and NoOp fallback
 * lifecycle-aware infrastructure
 * production-oriented backend engineering

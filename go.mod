@@ -22,4 +22,9 @@ require (
 
 require golang.org/x/crypto v0.50.0
 
-require cloud.google.com/go v0.67.0 // indirect
+require (
+	cloud.google.com/go v0.67.0 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/redis/go-redis/v9 v9.20.0 // indirect
+	go.uber.org/atomic v1.11.0 // indirect
+)

@@ -32,5 +32,8 @@ func InitDB() (*sql.DB, error) {
 		return nil, err
 	}
 
+	db.SetMaxOpenConns(2)
+	db.SetMaxIdleConns(2)
+
 	return db, nil
 }

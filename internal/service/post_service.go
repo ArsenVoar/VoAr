@@ -1,27 +1,45 @@
 package service
 
 import (
+	"VoAr/internal/cache"
 	"VoAr/internal/models"
 	"VoAr/internal/repository"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"strconv"
 )
 
 type PostService struct {
-	Repo *repository.PostRepository
-	DB   *sql.DB
+	Repo  *repository.PostRepository
+	DB    *sql.DB
+	Cache cache.CacheService
 }
 
 func (s *PostService) GetPost(ctx context.Context, id string) (models.Post, error) {
-	post, err := s.Repo.GetPostById(ctx, id)
+	var post models.Post
+	cacheKey := "post:" + id
+
+	cachedData, err := s.Cache.Get(ctx, cacheKey)
+	if err == nil {
+		if err := json.Unmarshal(cachedData, &post); err == nil {
+			return post, nil
+		}
+	}
+
+	post, err = s.Repo.GetPostById(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return models.Post{}, ErrNotFound
 		}
 		return models.Post{}, err
 	}
+
+	if data, err := json.Marshal(post); err == nil {
+		_ = s.Cache.Set(ctx, cacheKey, data, 0)
+	}
+
 	return post, nil
 }
 
