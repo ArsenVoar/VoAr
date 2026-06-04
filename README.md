@@ -54,7 +54,7 @@ The project focuses on backend engineering concepts including:
 
 * Go
 * PostgreSQL
-* Redis for caching
+* Redis
 * REST API
 
 ## Infrastructure
