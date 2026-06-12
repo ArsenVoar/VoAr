@@ -1,6 +1,12 @@
 # VoAr
 
-VoAr is a production-oriented backend web application written in Go.
+VoAr is a production-oriented backend application written in Go, built to explore backend architecture, runtime infrastructure, observability, caching, and scalability concepts.
+
+### Key Technologies
+
+Go • PostgreSQL • Redis • Docker • REST API • Context Propagation • Structured Logging
+
+---
 
 The project focuses on backend engineering concepts including:
 
@@ -18,6 +24,18 @@ The project focuses on backend engineering concepts including:
 ---
 
 # Features
+
+## Architecture Overview
+
+Request
+→ Middleware
+→ Handler
+→ Service
+→ Cache
+→ Repository
+→ PostgreSQL
+
+Redis is used as a performance layer through the Cache-Aside pattern with automatic NoOp fallback when Redis is unavailable.
 
 ## Application
 
