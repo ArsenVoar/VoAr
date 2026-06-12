@@ -27,6 +27,7 @@ The project focuses on backend engineering concepts including:
 
 ## Architecture Overview
 
+```text
 Request
 → Middleware
 → Handler
@@ -34,6 +35,7 @@ Request
 → Cache
 → Repository
 → PostgreSQL
+```
 
 Redis is used as a performance layer through the Cache-Aside pattern with automatic NoOp fallback when Redis is unavailable.
 
@@ -44,6 +46,7 @@ Redis is used as a performance layer through the Cache-Aside pattern with automa
 * User profiles
 * Article and post system
 * REST API endpoints
+* Comment system
 * HTML template rendering
 * Google OAuth integration (partial)
 * Caching of frequently accessed posts using Redis
@@ -368,6 +371,11 @@ docker-compose up --build
 * Session management
 * PostgreSQL integration
 * Docker containerization
+* Entity relationships
+* Service orchestration across domains
+* Content ownership design
+* Content moderation architecture
+
 
 ---
 

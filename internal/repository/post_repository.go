@@ -29,7 +29,7 @@ func (r *PostRepository) GetPosts(ctx context.Context, page, pageSize int) ([]mo
 
 	for rows.Next() {
 		var post models.Post
-		err = rows.Scan(&post.Id, &post.Title, &post.Anons, &post.FullText)
+		err = rows.Scan(&post.ID, &post.Title, &post.Anons, &post.FullText)
 		if err != nil {
 			return nil, err
 		}
@@ -52,7 +52,7 @@ func (r *PostRepository) GetPostById(ctx context.Context, id string) (models.Pos
 		id,
 	)
 
-	err := row.Scan(&post.Id, &post.Title, &post.Anons, &post.FullText)
+	err := row.Scan(&post.ID, &post.Title, &post.Anons, &post.FullText)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Post{}, ErrNotFound

@@ -15,12 +15,12 @@ type RedisCache struct {
 	defaultTTL time.Duration
 }
 
-func NewRedisCache(addr string, defaultTTL time.Duration) cache.CacheService {
+func NewRedisCache(addr string, defaultTTL time.Duration) CacheService {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: addr,
 	})
 
-	pong, err := rdb.Ping(context.Background()).Result()
+	_, err := rdb.Ping(context.Background()).Result()
 	if err != nil {
 		return NewNoOpCache(defaultTTL)
 	}

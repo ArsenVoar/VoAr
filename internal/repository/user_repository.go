@@ -22,7 +22,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id string) (models.User, e
 		id,
 	)
 
-	err := row.Scan(&user.Id, &user.Name, &user.Email)
+	err := row.Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.User{}, ErrNotFound
@@ -42,7 +42,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (models.U
 		email,
 	)
 
-	err := row.Scan(&user.Id, &user.Email, &user.Password)
+	err := row.Scan(&user.ID, &user.Email, &user.Password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.User{}, ErrNotFound

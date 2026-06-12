@@ -1,7 +1,7 @@
 package models
 
 type Post struct {
-	Id       int
+	ID       int
 	Title    string
 	Anons    string
 	FullText string
