@@ -67,10 +67,5 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(
-		w,
-		r,
-		"/article/"+vars["id"],
-		http.StatusSeeOther,
-	)
+	http.Redirect(w, r, "/show/"+vars["id"], http.StatusSeeOther)
 }

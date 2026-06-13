@@ -8,5 +8,5 @@ type Comment struct {
 	UserID    int
 	Content   string
 	CreatedAt time.Time
-	UpdatedAt time.Time
+	UpdatedAt *time.Time
 }

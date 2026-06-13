@@ -3,14 +3,61 @@
 {{ template "Header" . }}
 
 <main role="main" class="inner cover">
-    <h1 class="cover-heading">{{ .Title }}</h1>
-    <p class="lead">{{ .FullText }}</p>
-    <p class="lead">
-        <a href="/post" class="btn btn-lg btn-secondary">Back</a>
-    </p>
-</main>
 
-<hr class="Ar">
+    <h1 class="cover-heading">{{ .Data.Post.Title }}</h1>
+
+    <p class="lead">
+        {{ .Data.Post.FullText }}
+    </p>
+
+    <p class="lead">
+        <a href="/post" class="btn btn-lg btn-secondary">
+            Back
+        </a>
+    </p>
+
+    <hr>
+
+    <h3>Add Comment</h3>
+
+    <form method="POST" action="/article/{{ .Data.Post.ID }}/comments">
+
+        <div>
+            <textarea
+                name="content"
+                rows="4"
+                cols="60"
+                placeholder="Write your comment..."
+                required></textarea>
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Add Comment
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h3>Comments</h3>
+
+    {{ range .Data.Comments }}
+
+        <div class="comment">
+            <p>{{ .Content }}</p>
+        </div>
+
+        <hr>
+
+    {{ else }}
+
+        <p>No comments yet.</p>
+
+    {{ end }}
+
+</main>
 
 {{ template "Footer" }}
 

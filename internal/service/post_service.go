@@ -17,9 +17,9 @@ type PostService struct {
 	Cache cache.CacheService
 }
 
-func (s *PostService) GetPost(ctx context.Context, id string) (models.Post, error) {
+func (s *PostService) GetPost(ctx context.Context, id int) (models.Post, error) {
 	var post models.Post
-	cacheKey := "post:" + id
+	cacheKey := "post:" + strconv.Itoa(id)
 
 	cachedData, err := s.Cache.Get(ctx, cacheKey)
 	if err == nil {

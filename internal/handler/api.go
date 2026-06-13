@@ -17,7 +17,7 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 type LoginResponse struct {
-	UserID string `json:"userId,omitempty"`
+	UserID int `json:"userId,omitempty"`
 	Error  string `json:"error,omitempty"`
 }
 
@@ -62,7 +62,7 @@ func (h *ApiHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	json.NewEncoder(w).Encode(LoginResponse{
-		UserID: user.Id,
+		UserID: user.ID,
 	})
 }
 

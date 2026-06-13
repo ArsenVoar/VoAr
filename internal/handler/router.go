@@ -44,6 +44,10 @@ func SetupRouter(h *Handler) *http.Server {
 		"/profile/{id:[0-9]+}",
 		authMiddleware(http.HandlerFunc(h.UserProfile)),
 	).Methods("GET")
+	router.Handle(
+		"/article/{id:[0-9]+}/comments",
+		authMiddleware(http.HandlerFunc(h.CreateComment)),
+	).Methods("POST")
 
 	router.HandleFunc("/save_article", h.SaveArticle).Methods("POST")
 

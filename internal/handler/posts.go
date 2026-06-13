@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -54,7 +55,13 @@ func (h *Handler) ShowPost(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	vars := mux.Vars(r)
 
-	post, err := h.PostService.GetPost(ctx, vars["id"])
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Printf("internal error: %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	post, err := h.PostService.GetPost(ctx, id)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrNotFound):
@@ -66,6 +73,23 @@ func (h *Handler) ShowPost(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	comments, err := h.CommentService.GetCommentsByArticle(ctx, id)
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrNotFound):
+			http.Error(w, "comments not found", http.StatusNotFound)
 
-	h.renderTemplate(w, "show", post, "", r)
+		default:
+			log.Printf("internal error: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	data := ShowPostData{
+		Post:     post,
+		Comments: comments,
+	}
+
+	h.renderTemplate(w, "show", data, "", r)
 }

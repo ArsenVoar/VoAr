@@ -64,7 +64,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := h.Store.Get(r, "session-name")
 
-	session.Values["userId"] = user.Id
+	session.Values["userId"] = user.ID
 
 	err = session.Save(r, w)
 	if err != nil {

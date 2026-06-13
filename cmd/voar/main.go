@@ -44,10 +44,12 @@ func main() {
 	userRepo := &repository.UserRepository{DB: db}
 	postRepo := &repository.PostRepository{DB: db}
 	articleRepo := &repository.ArticleRepository{DB: db}
+	commentRepo := &repository.CommentRepository{DB: db}
 
 	userSvc := &service.UserService{Repo: userRepo, DB: db}
 	postSvc := &service.PostService{Repo: postRepo, Cache: redisCache}
 	articleSvc := &service.ArticleService{Repo: articleRepo}
+	commentSvc := &service.CommentService{CommentRepo: commentRepo, PostRepo: postRepo}
 
 	sessionSecret := os.Getenv("SESSION_SECRET")
 
@@ -61,7 +63,7 @@ func main() {
 		Secure:   false,
 	}
 
-	h := handler.NewHandler(userSvc, postSvc, articleSvc, store)
+	h := handler.NewHandler(userSvc, postSvc, articleSvc, commentSvc, store)
 
 	google.Google()
 

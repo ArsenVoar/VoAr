@@ -34,7 +34,7 @@ func (s *CommentService) CreateComment(ctx context.Context, comment models.Comme
 
 	comment.CreatedAt = time.Now()
 
-	err := s.CommentRepo.CreateComment(ctx, comment)
+	err = s.CommentRepo.CreateComment(ctx, comment)
 	if err != nil {
 		return err
 	}

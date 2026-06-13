@@ -5,9 +5,9 @@
   <h2>User Profile</h2>
 
   <div class="card p-3">
-    <p><strong>ID:</strong> {{.Id}}</p>
-    <p><strong>Name:</strong> {{.Name}}</p>
-    <p><strong>Email:</strong> {{.Email}}</p>
+<p><strong>ID:</strong> {{ .Data.ID }}</p>
+<p><strong>Name:</strong> {{ .Data.Name }}</p>
+<p><strong>Email:</strong> {{ .Data.Email }}</p>    
   </div>
 </main>
     {{ template "Footer" }}

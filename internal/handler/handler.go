@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"VoAr/internal/models"
 	"VoAr/internal/service"
 
 	"github.com/gorilla/sessions"
@@ -35,4 +36,8 @@ type TemplateData struct {
 	IsAuth bool
 	Data   interface{}
 	Error  string
+}
+type ShowPostData struct {
+	Post     models.Post
+	Comments []models.Comment
 }

@@ -311,3 +311,99 @@ REQUEST request_id=1780677590784553600 method=GET path=/show/1 status=200 durati
 REQUEST request_id=1780677590785282000 method=GET path=/show/1 status=200 duration=728.6µs
 INFO 2026-06-05T21:39:54+05:00 shutdown signal received
 INFO 2026-06-05T21:39:54+05:00 VoAr server stopped
+INFO 2026-06-13T20:52:36+05:00 starting VoAr server
+REQUEST request_id=1781365965144807900 method=GET path=/ status=200 duration=510.5µs
+REQUEST request_id=1781365967797390800 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1781365970387645600 method=GET path=/post status=200 duration=8.0376ms
+REQUEST request_id=1781365972617644700 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1781365973362736300 method=GET path=/create status=200 duration=0s
+REQUEST request_id=1781365976901901200 method=POST path=/save_article status=303 duration=7.9868ms
+REQUEST request_id=1781365976912839000 method=GET path=/ status=200 duration=0s
+REQUEST request_id=1781365977832613200 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1781365978776117700 method=GET path=/post status=200 duration=506.4µs
+REQUEST request_id=1781365981254966700 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1781365983645918400 method=GET path=/chat status=200 duration=464.9µs
+INFO 2026-06-13T20:53:08+05:00 request_id=1781365988393275000 cache_miss key=post:1
+INFO 2026-06-13T20:53:08+05:00 request_id=1781365988393275000 cache_set key=post:1
+REQUEST request_id=1781365988393275000 method=GET path=/show/1 status=200 duration=4.4634ms
+INFO 2026-06-13T20:53:11+05:00 request_id=1781365991232995800 cache_miss key=post:3
+INFO 2026-06-13T20:53:11+05:00 request_id=1781365991232995800 cache_set key=post:3
+REQUEST request_id=1781365991232995800 method=GET path=/show/3 status=200 duration=1.6852ms
+INFO 2026-06-13T20:53:16+05:00 request_id=1781365996413762200 cache_miss key=post:4
+INFO 2026-06-13T20:53:16+05:00 request_id=1781365996413762200 cache_set key=post:4
+REQUEST request_id=1781365996413762200 method=GET path=/show/4 status=200 duration=2.2102ms
+INFO 2026-06-13T20:53:18+05:00 request_id=1781365998956801000 cache_miss key=post:2
+INFO 2026-06-13T20:53:18+05:00 request_id=1781365998956801000 cache_set key=post:2
+REQUEST request_id=1781365998956801000 method=GET path=/show/2 status=200 duration=1.0988ms
+INFO 2026-06-13T20:53:20+05:00 request_id=1781366000703198200 cache_hit key=post:1
+REQUEST request_id=1781366000703198200 method=GET path=/show/1 status=200 duration=507.2µs
+REQUEST request_id=1781366012384047700 method=GET path=/auth status=200 duration=0s
+REQUEST request_id=1781366015083910200 method=POST path=/login status=303 duration=58.7534ms
+REQUEST request_id=1781366015146185100 method=GET path=/ status=200 duration=0s
+REQUEST request_id=1781366017086795200 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1781366017782476600 method=GET path=/post status=200 duration=506.3µs
+REQUEST request_id=1781366020086587900 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1781366021668869000 method=GET path=/post status=200 duration=510.9µs
+INFO 2026-06-13T20:53:56+05:00 shutdown signal received
+INFO 2026-06-13T20:53:56+05:00 VoAr server stopped
+INFO 2026-06-13T20:56:28+05:00 starting VoAr server
+REQUEST request_id=1781366193298579900 method=GET path=/post status=200 duration=2.0239ms
+INFO 2026-06-13T20:56:34+05:00 request_id=1781366194387602300 cache_hit key=post:1
+REQUEST request_id=1781366194387602300 method=GET path=/show/1 status=200 duration=4.5336ms
+INFO 2026-06-13T20:56:35+05:00 request_id=1781366195978460900 cache_hit key=post:2
+REQUEST request_id=1781366195978460900 method=GET path=/show/2 status=200 duration=627.5µs
+INFO 2026-06-13T20:56:37+05:00 request_id=1781366197465268800 cache_hit key=post:1
+REQUEST request_id=1781366197465268800 method=GET path=/show/1 status=200 duration=649.7µs
+INFO 2026-06-13T20:56:56+05:00 request_id=1781366216575941600 cache_hit key=post:1
+REQUEST request_id=1781366216575941600 method=GET path=/show/1 status=200 duration=1.7452ms
+REQUEST request_id=1781366217133988000 method=GET path=/post status=200 duration=505.4µs
+REQUEST request_id=1781366217405723400 method=GET path=/post status=200 duration=527.4µs
+INFO 2026-06-13T20:56:57+05:00 request_id=1781366217760060900 cache_hit key=post:1
+REQUEST request_id=1781366217760060900 method=GET path=/show/1 status=200 duration=1.6236ms
+INFO 2026-06-13T20:56:58+05:00 request_id=1781366218444716200 cache_hit key=post:1
+REQUEST request_id=1781366218444716200 method=GET path=/show/1 status=200 duration=509.8µs
+REQUEST request_id=1781366219012997700 method=GET path=/post status=200 duration=534.5µs
+INFO 2026-06-13T20:56:59+05:00 request_id=1781366219352593400 cache_hit key=post:1
+REQUEST request_id=1781366219352593400 method=GET path=/show/1 status=200 duration=1.0812ms
+INFO 2026-06-13T20:56:59+05:00 request_id=1781366219603339700 cache_hit key=post:1
+REQUEST request_id=1781366219603339700 method=GET path=/show/1 status=200 duration=660.2µs
+REQUEST request_id=1781366221369955200 method=GET path=/post status=200 duration=544.4µs
+REQUEST request_id=1781366222935391400 method=GET path=/create status=200 duration=0s
+REQUEST request_id=1781366225302022100 method=POST path=/save_article status=303 duration=2.0762ms
+REQUEST request_id=1781366225305614300 method=GET path=/ status=200 duration=1.505ms
+REQUEST request_id=1781366226493838400 method=GET path=/examples status=200 duration=0s
+REQUEST request_id=1781366227692873400 method=GET path=/post status=200 duration=505.5µs
+INFO 2026-06-13T20:57:09+05:00 request_id=1781366229795313100 cache_miss key=post:8
+INFO 2026-06-13T20:57:09+05:00 request_id=1781366229795313100 cache_set key=post:8
+REQUEST request_id=1781366229795313100 method=GET path=/show/8 status=200 duration=2.2452ms
+INFO 2026-06-13T20:57:14+05:00 shutdown signal received
+INFO 2026-06-13T20:57:14+05:00 VoAr server stopped
+INFO 2026-06-13T21:01:43+05:00 starting VoAr server
+REQUEST request_id=1781366506559733700 method=GET path=/post status=200 duration=2.1841ms
+INFO 2026-06-13T21:01:47+05:00 request_id=1781366507533591100 cache_miss key=post:4
+INFO 2026-06-13T21:01:47+05:00 request_id=1781366507533591100 cache_set key=post:4
+REQUEST request_id=1781366507533591100 method=GET path=/show/4 status=200 duration=2.503ms
+REQUEST request_id=1781366509599615600 method=POST path=/article/4/comments status=303 duration=9.7608ms
+INFO 2026-06-13T21:01:49+05:00 request_id=1781366509612782900 cache_hit key=post:4
+internal error: sql: Scan error on column index 5, name "updated_at": unsupported Scan, storing driver.Value type <nil> into type *time.Time
+REQUEST request_id=1781366509612782900 method=GET path=/show/4 status=500 duration=1.4285ms
+INFO 2026-06-13T21:02:05+05:00 request_id=1781366525853151700 cache_hit key=post:4
+internal error: sql: Scan error on column index 5, name "updated_at": unsupported Scan, storing driver.Value type <nil> into type *time.Time
+REQUEST request_id=1781366525853151700 method=GET path=/show/4 status=500 duration=1.734ms
+INFO 2026-06-13T21:02:07+05:00 request_id=1781366527731789500 cache_miss key=post:5
+INFO 2026-06-13T21:02:07+05:00 request_id=1781366527731789500 cache_set key=post:5
+REQUEST request_id=1781366527731789500 method=GET path=/show/5 status=200 duration=1.1571ms
+INFO 2026-06-13T21:02:09+05:00 request_id=1781366529606386500 cache_hit key=post:4
+internal error: sql: Scan error on column index 5, name "updated_at": unsupported Scan, storing driver.Value type <nil> into type *time.Time
+REQUEST request_id=1781366529606386500 method=GET path=/show/4 status=500 duration=747.1µs
+REQUEST request_id=1781366532297544500 method=GET path=/profile/4 status=200 duration=505.7µs
+INFO 2026-06-13T21:02:27+05:00 shutdown signal received
+INFO 2026-06-13T21:02:27+05:00 VoAr server stopped
+INFO 2026-06-13T21:10:13+05:00 starting VoAr server
+REQUEST request_id=1781367019000349100 method=GET path=/post status=200 duration=2.5608ms
+INFO 2026-06-13T21:10:20+05:00 request_id=1781367020023427900 cache_miss key=post:4
+INFO 2026-06-13T21:10:20+05:00 request_id=1781367020023427900 cache_set key=post:4
+REQUEST request_id=1781367020023427900 method=GET path=/show/4 status=200 duration=3.3193ms
+REQUEST request_id=1781367023156438100 method=GET path=/profile/4 status=200 duration=2.4664ms
+INFO 2026-06-13T21:10:30+05:00 shutdown signal received
+INFO 2026-06-13T21:10:30+05:00 VoAr server stopped

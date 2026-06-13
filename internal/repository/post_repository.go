@@ -43,7 +43,7 @@ func (r *PostRepository) GetPosts(ctx context.Context, page, pageSize int) ([]mo
 	return posts, nil
 }
 
-func (r *PostRepository) GetPostById(ctx context.Context, id string) (models.Post, error) {
+func (r *PostRepository) GetPostById(ctx context.Context, id int) (models.Post, error) {
 	var post models.Post
 
 	row := r.DB.QueryRowContext(
