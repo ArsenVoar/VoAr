@@ -5,40 +5,48 @@ import (
 	"VoAr/internal/repository"
 	"context"
 	"errors"
+	"log"
 	"time"
 )
 
 type CommentService struct {
-	CommentRepo *repository.CommentRepository
-	PostRepo    *repository.PostRepository
+	CommentRepo         *repository.CommentRepository
+	PostRepo            *repository.PostRepository
+	NotificationService *NotificationService
 }
 
 const MaxCommentLength = 500
 
-func (s *CommentService) CreateComment(ctx context.Context, comment models.Comment) error {
+func (s *CommentService) CreateComment(ctx context.Context, comment models.Comment) (int, error) {
 	if comment.Content == "" {
-		return ErrEmptyFields
+		return 0, ErrEmptyFields
 	}
 
-	_, err := s.PostRepo.GetPostById(ctx, comment.ArticleID)
+	post, err := s.PostRepo.GetPostById(ctx, comment.ArticleID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return ErrNotFound
+			return 0, ErrNotFound
 		}
-		return err
+		return 0, err
 	}
 
 	if len(comment.Content) > MaxCommentLength {
-		return ErrInvalidInput
+		return 0, ErrInvalidInput
 	}
 
 	comment.CreatedAt = time.Now()
 
-	err = s.CommentRepo.CreateComment(ctx, comment)
+	commentID, err := s.CommentRepo.CreateComment(ctx, comment)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+
+	err = s.NotificationService.NotifyCommentCreated(ctx, post.UserID, comment.UserID, commentID)
+	if err != nil {
+		log.Printf("notification creation failed: %v", err)
+	}
+
+	return commentID, nil
 }
 func (s *CommentService) GetCommentsByArticle(ctx context.Context, articleID int) ([]models.Comment, error) {
 	comments, err := s.CommentRepo.GetCommentsByArticle(ctx, articleID)

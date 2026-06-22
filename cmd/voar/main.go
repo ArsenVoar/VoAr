@@ -45,13 +45,18 @@ func main() {
 	postRepo := &repository.PostRepository{DB: db}
 	articleRepo := &repository.ArticleRepository{DB: db}
 	commentRepo := &repository.CommentRepository{DB: db}
+	notifyRepo := &repository.NotificationRepository{DB: db}
 
 	userSvc := &service.UserService{Repo: userRepo, DB: db}
 	postSvc := &service.PostService{Repo: postRepo, Cache: redisCache}
 	articleSvc := &service.ArticleService{Repo: articleRepo}
-	commentSvc := &service.CommentService{CommentRepo: commentRepo, PostRepo: postRepo}
+	notifySvc := &service.NotificationService{NotifyRepo: notifyRepo}
+	commentSvc := &service.CommentService{CommentRepo: commentRepo, PostRepo: postRepo, NotificationService: notifySvc}
 
 	sessionSecret := os.Getenv("SESSION_SECRET")
+	if sessionSecret == "" {
+		log.Fatal("SESSION_SECRET is required")
+	}
 
 	store := sessions.NewCookieStore(
 		[]byte(sessionSecret),
@@ -61,9 +66,10 @@ func main() {
 		MaxAge:   3600 * 8,
 		HttpOnly: true,
 		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
 	}
 
-	h := handler.NewHandler(userSvc, postSvc, articleSvc, commentSvc, store)
+	h := handler.NewHandler(userSvc, postSvc, articleSvc, commentSvc, notifySvc, store)
 
 	google.Google()
 

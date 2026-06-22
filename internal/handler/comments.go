@@ -48,7 +48,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		Content:   content,
 	}
 
-	err = h.CommentService.CreateComment(ctx, comment)
+	_, err = h.CommentService.CreateComment(ctx, comment)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrEmptyFields):

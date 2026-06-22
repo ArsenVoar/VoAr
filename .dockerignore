@@ -1,0 +1,17 @@
+.git
+.gitignore
+
+.env
+.env.example
+
+logs
+
+tmp
+bin
+
+README.md
+
+.vscode
+.idea
+
+db/*.sql

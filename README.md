@@ -1,25 +1,25 @@
 # VoAr
 
-VoAr is a production-oriented backend application written in Go, built to explore backend architecture, runtime infrastructure, observability, caching, and scalability concepts.
+VoAr is a backend web application written in Go, focused on scalable application architecture, infrastructure design, caching, observability, authentication, and runtime coordination.
 
 ### Key Technologies
 
-Go • PostgreSQL • Redis • Docker • REST API • Context Propagation • Structured Logging
+Go • PostgreSQL • Redis • Docker • Database Migrations • REST API • Context Propagation • Structured Logging
 
 ---
 
-The project focuses on backend engineering concepts including:
+The project combines application functionality with backend infrastructure concerns, including:
 
 * layered architecture
-* runtime infrastructure
-* middleware coordination
+* middleware orchestration
 * request lifecycle management
 * context propagation
 * observability
 * graceful shutdown
-* transaction handling
-* concurrent runtime coordination
-* caching with Redis or NoOp fallback
+* transaction management
+* database migrations
+* caching strategies
+* runtime coordination
 
 ---
 
@@ -37,20 +37,21 @@ Request
 → PostgreSQL
 ```
 
-Redis is used as a performance layer through the Cache-Aside pattern with automatic NoOp fallback when Redis is unavailable.
+Redis is used through a Cache-Aside pattern with automatic fallback to a NoOp implementation when Redis is unavailable.
 
 ## Application
 
 * User registration and authentication
 * Session-based authorization
 * User profiles
-* Article and post system
-* REST API endpoints
+* Article publishing system
 * Comment system
-* HTML template rendering
+* Notification system
+* Server-side HTML rendering
+* REST API endpoints
 * Google OAuth integration (partial)
-* Caching of frequently accessed posts using Redis
-* Automatic fallback to NoOp cache when Redis is unavailable
+* Redis-backed post caching
+* Automatic cache fallback
 
 ## Backend Infrastructure
 
@@ -60,12 +61,11 @@ Redis is used as a performance layer through the Cache-Aside pattern with automa
 * Timeout middleware
 * Graceful shutdown
 * Transaction lifecycle logging
-* Context-aware database queries
+* Context-aware database operations
 * Concurrent request handling
-* Middleware-driven runtime coordination
-* Redis caching for improved read performance
-* Cache hit/miss/error logging
+* Cache hit/miss/error monitoring
 * Docker support
+* Database migrations
 
 ---
 
@@ -81,7 +81,8 @@ Redis is used as a performance layer through the Cache-Aside pattern with automa
 ## Infrastructure
 
 * Docker
-* docker-compose
+* Docker Compose
+* golang-migrate
 
 ## Libraries
 
@@ -113,8 +114,9 @@ Application lifecycle flow:
 
 ```text
 Startup
-→ Runtime execution
+→ Database initialization
 → Redis connection or NoOp fallback
+→ Runtime execution
 → Concurrent request handling
 → Graceful shutdown signal
 → Request draining
@@ -137,6 +139,7 @@ Responsible for:
 * HTTP request handling
 * request validation
 * response generation
+* session management
 * HTTP status management
 
 ## Service Layer
@@ -147,6 +150,7 @@ Responsible for:
 * authorization
 * validation
 * transaction coordination
+* notification orchestration
 * caching coordination
 * runtime orchestration
 
@@ -154,12 +158,12 @@ Responsible for:
 
 Responsible for:
 
-* caching frequently accessed data (posts)
+* caching frequently accessed posts
 * Redis integration
-* fallback to NoOp cache if Redis is unavailable
-* logging cache hits, misses, sets, deletes, errors
-* TTL management for cache entries
-* JSON serialization/deserialization for cached data
+* fallback to NoOp cache
+* cache lifecycle logging
+* TTL management
+* serialization and deserialization
 
 ## Repository Layer
 
@@ -168,6 +172,39 @@ Responsible for:
 * database access
 * SQL execution
 * context-aware queries
+* transaction participation through DBTX
+
+---
+
+# Database
+
+## Schema
+
+The application currently consists of the following entities:
+
+* users
+* articles
+* comments
+* notifications
+
+Relationships:
+
+```text
+User
+ ├─ Articles
+ ├─ Comments
+ └─ Notifications
+
+Article
+ ├─ Author
+ └─ Comments
+
+Comment
+ ├─ Author
+ └─ Article
+```
+
+Database changes are managed through versioned migrations using golang-migrate.
 
 ---
 
@@ -201,12 +238,12 @@ The project uses:
 The application includes centralized structured logging with:
 
 * request IDs
-* HTTP method/path
+* HTTP method and path
 * response status
 * execution duration
 * transaction lifecycle events
-* cache events: hit, miss, set, delete, error
-* startup/shutdown events
+* cache events
+* startup and shutdown events
 
 Logs are written to:
 
@@ -228,7 +265,7 @@ INFO request_id=1780602029563122200 cache_set key=post:1
 
 The timeout middleware creates bounded request execution using Go contexts.
 
-This protects the runtime from:
+This protects the application from:
 
 * uncontrolled execution
 * hanging requests
@@ -249,14 +286,13 @@ VoAr supports coordinated runtime shutdown with:
 
 # Testing
 
-The project includes tests for:
+Current test coverage includes:
 
-* login service
+* user service authentication
 * middleware behavior
 * request ID propagation
 * timeout injection
 * context cancellation
-* cache hits, misses, and fallback behavior
 
 Run all tests:
 
@@ -268,16 +304,14 @@ go test ./...
 
 # Observability
 
-The backend runtime is observable rather than operating as a black box system.
-
-The project provides visibility into:
+The application provides visibility into:
 
 * request lifecycle
 * timeout cancellations
-* runtime startup/shutdown
+* startup and shutdown events
 * request duration
 * transaction lifecycle
-* cache usage: hits, misses, sets, deletes, errors
+* cache usage
 * middleware execution flow
 
 ---
@@ -286,25 +320,28 @@ The project provides visibility into:
 
 ```text
 cmd/
-    voar/
+└── voar/
+
+db/
+└── migrations/
 
 internal/
-    cache/
-    contextkeys/
-    database/
-    handler/
-    logger/
-    middleware/
-    models/
-    repository/
-    service/
+├── cache/
+├── contextkeys/
+├── database/
+├── handler/
+├── logger/
+├── middleware/
+├── models/
+├── repository/
+└── service/
 
 pkg/
-    google/
+└── google/
 
 web/
-    templates/
-    css/
+├── css/
+└── templates/
 ```
 
 ---
@@ -321,15 +358,20 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=your_password
 DB_NAME=voar
-REDIS_ADDR=localhost:6379
-CACHE_TTL=5m
 ```
 
-## 2. Start PostgreSQL and Redis
+## 2. Apply migrations
 
-Make sure PostgreSQL and Redis are running locally.
+```bash
+migrate -path db/migrations \
+-database "postgres://postgres:password@localhost:5432/voar?sslmode=disable" up
+```
 
-## 3. Run application
+## 3. Start PostgreSQL and Redis
+
+Ensure PostgreSQL and Redis are running locally.
+
+## 4. Run application
 
 ```bash
 go run ./cmd/voar
@@ -345,10 +387,10 @@ http://localhost:8080
 
 # Docker
 
-Run with Docker:
+Build and run:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ---
@@ -357,6 +399,7 @@ docker-compose up --build
 
 * Layered architecture
 * Dependency injection
+* Repository pattern
 * Middleware architecture
 * Request lifecycle management
 * Context propagation
@@ -365,30 +408,14 @@ docker-compose up --build
 * Timeout middleware
 * Graceful shutdown
 * Transaction handling
-* Redis caching
-* Concurrent runtime coordination
-* Repository pattern
+* Redis cache-aside pattern
 * Session management
 * PostgreSQL integration
+* Database migrations
 * Docker containerization
 * Entity relationships
-* Service orchestration across domains
-* Content ownership design
-* Content moderation architecture
+* Service orchestration
+* Notification workflows
 
-
----
-
-# Project Goal
-
-VoAr was created as a backend engineering and runtime infrastructure learning project.
-
-The main focus areas are:
-
-* backend architecture
-* runtime systems
-* middleware coordination
-* observability
-* caching strategies with Redis and NoOp fallback
-* lifecycle-aware infrastructure
-* production-oriented backend engineering
+```
+```

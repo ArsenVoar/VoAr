@@ -12,6 +12,7 @@ type Handler struct {
 	PostService    *service.PostService
 	ArticleService *service.ArticleService
 	CommentService *service.CommentService
+	NotificationService *service.NotificationService
 	Store          *sessions.CookieStore
 }
 
@@ -20,6 +21,7 @@ func NewHandler(
 	postSvc *service.PostService,
 	articleSvc *service.ArticleService,
 	commentsSvc *service.CommentService,
+	notifySvc *service.NotificationService,
 	store *sessions.CookieStore,
 ) *Handler {
 	return &Handler{
@@ -27,6 +29,7 @@ func NewHandler(
 		PostService:    postSvc,
 		ArticleService: articleSvc,
 		CommentService: commentsSvc,
+		NotificationService: notifySvc,
 		Store:          store,
 	}
 }

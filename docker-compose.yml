@@ -1,21 +1,48 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:15
+
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: voar
+
     ports:
       - "5432:5432"
 
-  app:
-    build: .
-    ports:
-      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    image: migrate/migrate
+
     depends_on:
       - postgres
+
+    volumes:
+      - ./db/migrations:/migrations
+
+    command:
+      [
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://postgres:password@postgres:5432/voar?sslmode=disable",
+        "up"
+      ]
+
+  app:
+    build: .
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - migrate
+
     environment:
       DB_HOST: postgres
       DB_PORT: 5432

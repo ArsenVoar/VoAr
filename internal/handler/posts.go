@@ -15,9 +15,29 @@ func (h *Handler) SaveArticle(w http.ResponseWriter, r *http.Request) {
 	anons := r.FormValue("anons")
 	fullText := r.FormValue("full_text")
 
+	session, err := h.Store.Get(r, "session-name")
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	userIDValue, ok := session.Values["userId"]
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID, ok := userIDValue.(int)
+	if !ok {
+		http.Error(w, "invalid user id", http.StatusInternalServerError)
+		return
+	}
+
 	ctx := r.Context()
 
-	err := h.ArticleService.Create(ctx, title, anons, fullText)
+	log.Printf("userID=%v type=%T", userIDValue, userIDValue)
+
+	err = h.ArticleService.Create(ctx, userID, title, anons, fullText)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrEmptyFields):

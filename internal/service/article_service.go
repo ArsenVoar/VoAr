@@ -4,6 +4,7 @@ import (
 	"VoAr/internal/repository"
 	"context"
 	"database/sql"
+	"log"
 )
 
 type ArticleService struct {
@@ -11,12 +12,17 @@ type ArticleService struct {
 	DB   *sql.DB
 }
 
-func (s *ArticleService) Create(ctx context.Context, title, anons, fullText string) error {
+func (s *ArticleService) Create(ctx context.Context, userID int, title, anons, fullText string) error {
+	if userID <= 0 {
+		return ErrUnauthorized
+	}
 	if title == "" || anons == "" || fullText == "" {
 		return ErrEmptyFields
 	}
 
-	err := s.Repo.Create(ctx, title, anons, fullText)
+	log.Printf("ArticleService userID=%d", userID)
+
+	err := s.Repo.Create(ctx, userID, title, anons, fullText)
 	if err != nil {
 		return err
 	}

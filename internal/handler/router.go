@@ -36,20 +36,26 @@ func SetupRouter(h *Handler) *http.Server {
 	router.HandleFunc("/register", h.Register).Methods("POST")
 	router.HandleFunc("/login", h.Login).Methods("POST")
 	router.HandleFunc("/api/login", api.Login).Methods("POST")
-
 	router.HandleFunc("/post", h.Post).Methods("GET")
 	router.HandleFunc("/show/{id:[0-9]+}", h.ShowPost).Methods("GET")
 
 	router.Handle(
+		"/notifications",
+		authMiddleware(http.HandlerFunc(h.Notifications)),
+	).Methods("GET")
+	router.Handle(
 		"/profile/{id:[0-9]+}",
 		authMiddleware(http.HandlerFunc(h.UserProfile)),
 	).Methods("GET")
+
 	router.Handle(
 		"/article/{id:[0-9]+}/comments",
 		authMiddleware(http.HandlerFunc(h.CreateComment)),
 	).Methods("POST")
-
-	router.HandleFunc("/save_article", h.SaveArticle).Methods("POST")
+	router.Handle(
+		"/save_article",
+		authMiddleware(http.HandlerFunc(h.SaveArticle)),
+	).Methods("POST")
 
 	router.HandleFunc("/auth/google/callback", func(w http.ResponseWriter, r *http.Request) {
 		_, err := gothic.CompleteUserAuth(w, r)

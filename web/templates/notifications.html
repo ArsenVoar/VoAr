@@ -1,0 +1,19 @@
+{{ define "notifications"}}
+
+{{ template "Header" .}}
+
+<h1>Notifications</h1>
+
+{{range .Data}}
+<div>
+    User {{.ActorID}} commented on your article
+</div>
+{{else}}
+<div>
+    No notifications
+</div>
+{{end}}
+
+{{ template "Footer"}}
+
+{{ end }}

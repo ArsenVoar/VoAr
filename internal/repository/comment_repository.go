@@ -9,13 +9,15 @@ type CommentRepository struct {
 	DB DBTX
 }
 
-func (r *CommentRepository) CreateComment(ctx context.Context, comment models.Comment) error {
-	_, err := r.DB.ExecContext(
+func (r *CommentRepository) CreateComment(ctx context.Context, comment models.Comment) (int, error) {
+	var commentID int
+
+	err := r.DB.QueryRowContext(
 		ctx,
-		"INSERT INTO comments (article_id, user_id, content, created_at) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO comments (article_id, user_id, content, created_at) VALUES ($1, $2, $3, $4) RETURNING id",
 		comment.ArticleID, comment.UserID, comment.Content, comment.CreatedAt,
-	)
-	return err
+	).Scan(&commentID)
+	return commentID, err
 }
 
 func (r *CommentRepository) GetCommentsByArticle(ctx context.Context, articleID int) ([]models.Comment, error) {
