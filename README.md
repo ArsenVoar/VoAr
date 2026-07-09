@@ -1,8 +1,8 @@
 # VoAr
 
 ![Go](https://img.shields.io/badge/Go-1.25-blue)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
-![Redis](https://img.shields.io/badge/Redis-7-red)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-blue)
+![Redis](https://img.shields.io/badge/Redis-9-red)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 VoAr is a backend web application written in Go that demonstrates modern backend engineering practices, including layered architecture, PostgreSQL integration, Redis Cache-Aside caching, request lifecycle management, structured logging, and graceful shutdown.
