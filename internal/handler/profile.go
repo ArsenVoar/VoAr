@@ -1,29 +1,31 @@
 package handler
 
 import (
+	"VoAr/internal/logger"
 	"VoAr/internal/service"
 	"errors"
-	"fmt"
-	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
-func (h *Handler) UserProfile(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ShowProfile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	session, err := h.Store.Get(r, "session-name")
+	userID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Printf("session get error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		http.Error(w, "invalid user id", http.StatusBadRequest)
 		return
 	}
 
-	sessionUserID := fmt.Sprintf("%v", session.Values["userId"])
+	sessionUserID, err := h.currentUserID(w, r)
+	if err != nil {
+		return
+	}
 
 	ctx := r.Context()
 
-	user, err := h.UserService.GetProfile(ctx, vars["id"], sessionUserID)
+	user, err := h.UserService.GetUserProfile(ctx, userID, sessionUserID)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrUserNotFound):
@@ -33,7 +35,7 @@ func (h *Handler) UserProfile(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		default:
-			log.Printf("internal error: %v", err)
+			logger.Error(err.Error())
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}
 		return

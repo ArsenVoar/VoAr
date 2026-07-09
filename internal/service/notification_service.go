@@ -2,13 +2,17 @@ package service
 
 import (
 	"VoAr/internal/models"
-	"VoAr/internal/repository"
 	"context"
 	"time"
 )
 
+type NotificationRepository interface {
+	CreateNotification(ctx context.Context, notification models.Notification) error
+	GetNotificationsByUser(ctx context.Context, userID int) ([]models.Notification, error)
+}
+
 type NotificationService struct {
-	NotifyRepo *repository.NotificationRepository
+	NotificationRepo NotificationRepository
 }
 
 func (s *NotificationService) NotifyCommentCreated(ctx context.Context, recipientID int, actorID int, commentID int) error {
@@ -23,9 +27,9 @@ func (s *NotificationService) NotifyCommentCreated(ctx context.Context, recipien
 		CreatedAt:   time.Now(),
 	}
 
-	return s.NotifyRepo.CreateNotification(ctx, notification)
+	return s.NotificationRepo.CreateNotification(ctx, notification)
 }
 
 func (s *NotificationService) GetNotificationsByUser(ctx context.Context, userID int) ([]models.Notification, error) {
-	return s.NotifyRepo.GetNotificationsByUser(ctx, userID)
+	return s.NotificationRepo.GetNotificationsByUser(ctx, userID)
 }

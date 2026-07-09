@@ -16,7 +16,8 @@ func AuthMiddleware(store *sessions.CookieStore) func(http.Handler) http.Handler
 				return
 			}
 
-			if session.Values["userId"] == nil {
+			userID, ok := session.Values["userId"].(int)
+			if !ok || userID <= 0 {
 				http.Redirect(w, r, "/auth", http.StatusSeeOther)
 				return
 			}

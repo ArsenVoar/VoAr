@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"VoAr/internal/logger"
 	"VoAr/internal/models"
 	"VoAr/internal/service"
 	"errors"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -18,34 +18,22 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	content := r.FormValue("content")
 
-	articleID, err := strconv.Atoi(vars["id"])
+	postID, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, "invalid article id", http.StatusBadRequest)
+		http.Error(w, "invalid post id", http.StatusBadRequest)
 		return
 	}
 
-	session, err := h.Store.Get(r, "session-name")
+	userID, err := h.currentUserID(w, r)
 	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	userIDValue, ok := session.Values["userId"]
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userID, ok := userIDValue.(int)
-	if !ok {
-		http.Error(w, "invalid user id", http.StatusInternalServerError)
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
 		return
 	}
 
 	comment := models.Comment{
-		ArticleID: articleID,
-		UserID:    userID,
-		Content:   content,
+		PostID:  postID,
+		UserID:  userID,
+		Content: content,
 	}
 
 	_, err = h.CommentService.CreateComment(ctx, comment)
@@ -61,7 +49,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "invalid input", http.StatusBadRequest)
 
 		default:
-			log.Printf("internal error: %v", err)
+			logger.Error(err.Error())
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}
 		return

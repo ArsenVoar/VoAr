@@ -1,34 +1,22 @@
 package handler
 
 import (
-	"log"
+	"VoAr/internal/logger"
 	"net/http"
 )
 
 func (h *Handler) Notifications(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	session, err := h.Store.Get(r, "session-name")
+	userID, err := h.currentUserID(w, r)
 	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	userIDValue, ok := session.Values["userId"]
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userID, ok := userIDValue.(int)
-	if !ok {
-		http.Error(w, "invalid user id", http.StatusInternalServerError)
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
 		return
 	}
 
 	notifications, err := h.NotificationService.GetNotificationsByUser(ctx, userID)
 	if err != nil {
-		log.Printf("internal error: %v", err)
+		logger.Error(err.Error())
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}

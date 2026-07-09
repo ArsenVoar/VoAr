@@ -38,20 +38,18 @@ func main() {
 	}
 	defer db.Close()
 
-	cacheTTL := 5 * time.Minute
+	const cacheTTL = 5 * time.Minute
 	redisCache := cache.NewRedisCache("localhost:6379", cacheTTL)
 
 	userRepo := &repository.UserRepository{DB: db}
 	postRepo := &repository.PostRepository{DB: db}
-	articleRepo := &repository.ArticleRepository{DB: db}
 	commentRepo := &repository.CommentRepository{DB: db}
-	notifyRepo := &repository.NotificationRepository{DB: db}
+	notificationRepo := &repository.NotificationRepository{DB: db}
 
-	userSvc := &service.UserService{Repo: userRepo, DB: db}
-	postSvc := &service.PostService{Repo: postRepo, Cache: redisCache}
-	articleSvc := &service.ArticleService{Repo: articleRepo}
-	notifySvc := &service.NotificationService{NotifyRepo: notifyRepo}
-	commentSvc := &service.CommentService{CommentRepo: commentRepo, PostRepo: postRepo, NotificationService: notifySvc}
+	userSvc := &service.UserService{UserRepo: userRepo, DB: db}
+	postSvc := &service.PostService{PostRepo: postRepo, Cache: redisCache}
+	notificationSvc := &service.NotificationService{NotificationRepo: notificationRepo}
+	commentSvc := &service.CommentService{CommentRepo: commentRepo, PostReader: postRepo, Notifier: notificationSvc}
 
 	sessionSecret := os.Getenv("SESSION_SECRET")
 	if sessionSecret == "" {
@@ -69,7 +67,7 @@ func main() {
 		SameSite: http.SameSiteLaxMode,
 	}
 
-	h := handler.NewHandler(userSvc, postSvc, articleSvc, commentSvc, notifySvc, store)
+	h := handler.NewHandler(userSvc, postSvc, commentSvc, notificationSvc, store)
 
 	google.Google()
 

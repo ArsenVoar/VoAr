@@ -1,3 +1,5 @@
+// Package logger provides application-specific logging helpers.
+// It centralizes log formatting for requests, transactions and cache events.
 package logger
 
 import (
@@ -29,55 +31,30 @@ func Init() error {
 func Info(message string) {
 	timestamp := time.Now().Format(time.RFC3339)
 
-	log.Println(
-		fmt.Sprintf(
-			"INFO %s %s",
-			timestamp,
-			message,
-		),
-	)
+	log.Printf("INFO %s %s", timestamp, message)
 }
-
 func Error(message string) {
 	timestamp := time.Now().Format(time.RFC3339)
 
-	log.Println(
-		fmt.Sprintf(
-			"ERROR %s %s",
-			timestamp,
-			message,
-		),
-	)
+	log.Printf("ERROR %s %s", timestamp, message)
 }
-
 func Request(requestID string, method string, path string, status int, duration time.Duration) {
-	log.Println(
-		fmt.Sprintf(
-			"REQUEST request_id=%s method=%s path=%s status=%d duration=%s",
-			requestID,
-			method,
-			path,
-			status,
-			duration.String(),
-		),
-	)
+	log.Printf(
+		"REQUEST request_id=%s method=%s path=%s status=%d duration=%s", requestID, method, path, status, duration)
 }
 
 func TransactionStarted(requestID string) {
 	message := fmt.Sprintf("request_id=%s tx_started", requestID)
 	Info(message)
 }
-
 func TransactionCommitted(requestID string) {
 	message := fmt.Sprintf("request_id=%s tx_committed", requestID)
 	Info(message)
 }
-
 func TransactionRollback(requestID string, err error) {
 	message := fmt.Sprintf("request_id=%s tx_rollback err=%s", requestID, err)
 	Info(message)
 }
-
 func TransactionFailed(requestID string, err error) {
 	message := fmt.Sprintf("request_id=%s tx_failed err=%s", requestID, err)
 	Error(message)

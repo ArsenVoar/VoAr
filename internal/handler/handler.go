@@ -7,39 +7,40 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+// Handler contains dependencies shared across HTTP handlers.
 type Handler struct {
-	UserService    *service.UserService
-	PostService    *service.PostService
-	ArticleService *service.ArticleService
-	CommentService *service.CommentService
+	UserService         *service.UserService
+	PostService         *service.PostService
+	CommentService      *service.CommentService
 	NotificationService *service.NotificationService
-	Store          *sessions.CookieStore
+	Store               *sessions.CookieStore
 }
 
 func NewHandler(
 	userSvc *service.UserService,
 	postSvc *service.PostService,
-	articleSvc *service.ArticleService,
 	commentsSvc *service.CommentService,
-	notifySvc *service.NotificationService,
+	notificationService *service.NotificationService,
 	store *sessions.CookieStore,
 ) *Handler {
 	return &Handler{
-		UserService:    userSvc,
-		PostService:    postSvc,
-		ArticleService: articleSvc,
-		CommentService: commentsSvc,
-		NotificationService: notifySvc,
-		Store:          store,
+		UserService:         userSvc,
+		PostService:         postSvc,
+		CommentService:      commentsSvc,
+		NotificationService: notificationService,
+		Store:               store,
 	}
 }
 
+// TemplateData is passed to HTML templates.
 type TemplateData struct {
 	UserID int
 	IsAuth bool
 	Data   interface{}
 	Error  string
 }
+
+// ShowPostData combines a post with its comments for rendering.
 type ShowPostData struct {
 	Post     models.Post
 	Comments []models.Comment

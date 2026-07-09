@@ -23,7 +23,7 @@ func TestLoggingMiddleware(t *testing.T) {
 
 	handler.ServeHTTP(recorder, request)
 
-		if recorder.Code != http.StatusTeapot {
+	if recorder.Code != http.StatusTeapot {
 		t.Errorf("expected status %d, got %d", http.StatusTeapot, recorder.Code)
 	}
 }

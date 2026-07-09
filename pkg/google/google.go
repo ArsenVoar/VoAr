@@ -1,9 +1,10 @@
 package google
 
 import (
-	"log"
+	"VoAr/internal/logger"
 	"net/http"
 	"os"
+	"strconv"
 	"text/template"
 
 	"github.com/gorilla/pat"
@@ -40,20 +41,31 @@ func Google() {
 		user, err := gothic.CompleteUserAuth(res, req)
 		if err != nil {
 			http.Error(res, "Internal server error", http.StatusInternalServerError)
-			log.Printf("Error getting provider name: %v", err)
+			logger.Error(err.Error())
 			return
 		}
 
-		log.Printf("User ID from provider: %v", user.UserID)
+		logger.Info("User ID from provider: " + user.UserID)
 
-		userId := user.UserID
+		// TODO: Map the Google provider ID to the application's users.id.
+		userID, err := strconv.Atoi(user.UserID)
+		if err != nil {
+			http.Error(res, "Invalid user ID from provider", http.StatusInternalServerError)
+			logger.Error(err.Error())
+			return
+		}
 		session, _ := gothic.Store.Get(req, "session-name")
-		session.Values["userId"] = userId
-		session.Save(req, res)
+		session.Values["userId"] = userID
 
-		log.Printf("User ID saved in session: %v", userId)
+		if err := session.Save(req, res); err != nil {
+			http.Error(res, "Internal server error", http.StatusInternalServerError)
+			logger.Error(err.Error())
+			return
+		}
 
-		http.Redirect(res, req, "/profile/"+userId, http.StatusSeeOther)
+		logger.Info("User ID saved in session: " + strconv.Itoa(userID))
+
+		http.Redirect(res, req, "/profile/"+strconv.Itoa(userID), http.StatusSeeOther)
 	})
 
 	p.Get("/auth/{provider}", func(res http.ResponseWriter, req *http.Request) {
@@ -64,9 +76,13 @@ func Google() {
 		t, err := template.ParseFiles("web/templates/mainPage.html")
 		if err != nil {
 			http.Error(res, "Internal server error", http.StatusInternalServerError)
-			log.Printf("Error parsing template: %v", err)
+			logger.Error(err.Error())
 			return
 		}
-		t.Execute(res, false)
+		if err := t.Execute(res, false); err != nil {
+			http.Error(res, "Internal server error", http.StatusInternalServerError)
+			logger.Error(err.Error())
+			return
+		}
 	})
 }

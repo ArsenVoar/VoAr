@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"VoAr/internal/logger"
 	"VoAr/internal/models"
 	"VoAr/internal/service"
 	"errors"
-	"log"
 	"net/http"
 )
 
@@ -31,7 +31,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "user already exists", http.StatusConflict)
 
 		default:
-			log.Printf("internal error: %v", err)
+			logger.Error(err.Error())
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}
 		return
@@ -56,19 +56,37 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			h.renderTemplate(w, "auth", nil, "Invalid credentials", r)
 
 		default:
-			log.Printf("internal error: %v", err)
+			logger.Error(err.Error())
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}
 		return
 	}
 
-	session, _ := h.Store.Get(r, "session-name")
+	session, err := h.Store.Get(r, "session-name")
+	if err != nil {
+		logger.Error(err.Error())
+
+		session, err = h.Store.New(r, "session-name")
+		if err != nil {
+			logger.Error(err.Error())
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		session.Options.MaxAge = -1
+
+		if err := session.Save(r, w); err != nil {
+			logger.Error(err.Error())
+		}
+
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		return
+	}
 
 	session.Values["userId"] = user.ID
 
 	err = session.Save(r, w)
 	if err != nil {
-		log.Printf("session save error: %v", err)
+		logger.Error(err.Error())
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -79,16 +97,29 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	session, err := h.Store.Get(r, "session-name")
 	if err != nil {
-		log.Printf("session save error: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		logger.Error(err.Error())
+
+		session, err = h.Store.New(r, "session-name")
+		if err != nil {
+			logger.Error(err.Error())
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		session.Options.MaxAge = -1
+
+		if err := session.Save(r, w); err != nil {
+			logger.Error(err.Error())
+		}
+
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
 		return
 	}
 
 	session.Options.MaxAge = -1
 
-	session.Save(r, w)
+	err = session.Save(r, w)
 	if err != nil {
-		log.Printf("session save error: %v", err)
+		logger.Error(err.Error())
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

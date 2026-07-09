@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// responseWriter captures the HTTP status code for logging.
 type responseWriter struct {
 	http.ResponseWriter
 	statusCode int

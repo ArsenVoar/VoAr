@@ -8,16 +8,21 @@ import (
 	"net/http"
 )
 
+// ApiHandler serves JSON API endpoints.
 type ApiHandler struct {
 	UserService *service.UserService
 	PostService *service.PostService
 }
+
+// LoginRequest represents API login credentials.
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+// LoginResponse is returned by the login endpoint.
 type LoginResponse struct {
-	UserID int `json:"userId,omitempty"`
+	UserID int    `json:"userId,omitempty"`
 	Error  string `json:"error,omitempty"`
 }
 
@@ -26,10 +31,8 @@ func (h *ApiHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(LoginResponse{
-			Error: "invalid request",
-		})
+		writeJSON(w, http.StatusBadRequest, LoginResponse{Error: "invalid request"})
+
 		return
 	}
 
@@ -39,54 +42,37 @@ func (h *ApiHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrInvalidInput):
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(LoginResponse{
-				Error: "invalid input",
-			})
+			writeJSON(w, http.StatusBadRequest, LoginResponse{Error: "invalid input"})
 
 		case errors.Is(err, service.ErrUnauthorized):
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(LoginResponse{
-				Error: "invalid credentials",
-			})
+			writeJSON(w, http.StatusUnauthorized, LoginResponse{Error: "invalid credentials"})
 
 		default:
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(LoginResponse{
-				Error: "internal error",
-			})
+			writeJSON(w, http.StatusInternalServerError, LoginResponse{Error: "internal error"})
 		}
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	json.NewEncoder(w).Encode(LoginResponse{
+	writeJSON(w, http.StatusOK, LoginResponse{
 		UserID: user.ID,
 	})
 }
 
 func (h *ApiHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	ctx := r.Context()
 
 	posts, err := h.PostService.GetPosts(ctx, r.URL.Query().Get("page"))
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"data":  nil,
-			"error": "internal error",
-		})
+	if errors.Is(err, service.ErrInvalidInput) {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"data": nil, "error": "invalid input"})
 		return
 	}
-
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"data": nil, "error": "internal error"})
+		return
+	}
 	if posts == nil {
 		posts = []models.Post{}
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"data":  posts,
-		"error": nil,
-	})
+	writeJSON(w, http.StatusOK, map[string]any{"data": posts, "error": nil})
 }

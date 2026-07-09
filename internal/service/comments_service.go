@@ -1,37 +1,50 @@
 package service
 
 import (
+	"VoAr/internal/logger"
 	"VoAr/internal/models"
 	"VoAr/internal/repository"
 	"context"
 	"errors"
-	"log"
 	"time"
+	"unicode/utf8"
 )
 
-type CommentService struct {
-	CommentRepo         *repository.CommentRepository
-	PostRepo            *repository.PostRepository
-	NotificationService *NotificationService
+type CommentRepository interface {
+	CreateComment(ctx context.Context, comment models.Comment) (int, error)
+	GetCommentsByPost(ctx context.Context, postID int) ([]models.Comment, error)
 }
 
-const MaxCommentLength = 500
+type PostReader interface {
+	GetPostByID(ctx context.Context, id int) (models.Post, error)
+}
+
+type NotificationNotifier interface {
+	NotifyCommentCreated(ctx context.Context, recipientID int, actorID int, commentID int) error
+}
+
+type CommentService struct {
+	CommentRepo CommentRepository
+	PostReader  PostReader
+	Notifier    NotificationNotifier
+}
+
+const maxCommentLength = 100
 
 func (s *CommentService) CreateComment(ctx context.Context, comment models.Comment) (int, error) {
 	if comment.Content == "" {
 		return 0, ErrEmptyFields
 	}
+	if utf8.RuneCountInString(comment.Content) > maxCommentLength {
+		return 0, ErrInvalidInput
+	}
 
-	post, err := s.PostRepo.GetPostById(ctx, comment.ArticleID)
+	post, err := s.PostReader.GetPostByID(ctx, comment.PostID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return 0, ErrNotFound
 		}
 		return 0, err
-	}
-
-	if len(comment.Content) > MaxCommentLength {
-		return 0, ErrInvalidInput
 	}
 
 	comment.CreatedAt = time.Now()
@@ -41,15 +54,15 @@ func (s *CommentService) CreateComment(ctx context.Context, comment models.Comme
 		return 0, err
 	}
 
-	err = s.NotificationService.NotifyCommentCreated(ctx, post.UserID, comment.UserID, commentID)
+	err = s.Notifier.NotifyCommentCreated(ctx, post.UserID, comment.UserID, commentID)
 	if err != nil {
-		log.Printf("notification creation failed: %v", err)
+		logger.Error(err.Error())
 	}
 
 	return commentID, nil
 }
-func (s *CommentService) GetCommentsByArticle(ctx context.Context, articleID int) ([]models.Comment, error) {
-	comments, err := s.CommentRepo.GetCommentsByArticle(ctx, articleID)
+func (s *CommentService) GetCommentsByPost(ctx context.Context, postID int) ([]models.Comment, error) {
+	comments, err := s.CommentRepo.GetCommentsByPost(ctx, postID)
 	if err != nil {
 		return nil, err
 	}

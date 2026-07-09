@@ -12,30 +12,14 @@ import (
 )
 
 type UserRepository interface {
-	GetByID(ctx context.Context, id string) (models.User, error)
-	GetByEmail(ctx context.Context, email string) (models.User, error)
+	GetUserByID(ctx context.Context, id int) (models.User, error)
+	GetUserByEmail(ctx context.Context, email string) (models.User, error)
 	CreateUser(ctx context.Context, user models.User) error
 }
 
 type UserService struct {
-	Repo UserRepository
-	DB   TransactionManager
-}
-
-func (s *UserService) GetProfile(ctx context.Context, userId string, sessionUserID string) (models.User, error) {
-	user, err := s.Repo.GetByID(ctx, userId)
-	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			return models.User{}, ErrUserNotFound
-		}
-		return models.User{}, err
-	}
-
-	if sessionUserID == "" {
-		return models.User{}, ErrUnauthorized
-	}
-
-	return user, nil
+	UserRepo UserRepository
+	DB       TransactionManager
 }
 
 func (s *UserService) Register(ctx context.Context, user models.User) error {
@@ -55,7 +39,9 @@ func (s *UserService) Register(ctx context.Context, user models.User) error {
 
 	defer func() {
 		if !committed {
-			tx.Rollback()
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				logger.TransactionRollback(requestID, rollbackErr)
+			}
 			logger.TransactionRollback(requestID, err)
 		}
 	}()
@@ -64,7 +50,7 @@ func (s *UserService) Register(ctx context.Context, user models.User) error {
 		DB: tx,
 	}
 
-	_, err = txRepo.GetByEmail(ctx, user.Email)
+	_, err = txRepo.GetUserByEmail(ctx, user.Email)
 	if err == nil {
 		err = ErrUserExists
 		logger.TransactionFailed(requestID, err)
@@ -111,9 +97,12 @@ func (s *UserService) Login(ctx context.Context, email, password string) (models
 		return models.User{}, ErrInvalidInput
 	}
 
-	user, err := s.Repo.GetByEmail(ctx, email)
+	user, err := s.UserRepo.GetUserByEmail(ctx, email)
 	if err != nil {
-		return models.User{}, ErrUnauthorized
+		if errors.Is(err, repository.ErrNotFound) {
+			return models.User{}, ErrUnauthorized
+		}
+		return models.User{}, err
 	}
 
 	err = bcrypt.CompareHashAndPassword(
@@ -122,6 +111,22 @@ func (s *UserService) Login(ctx context.Context, email, password string) (models
 	)
 	if err != nil {
 		return models.User{}, ErrUnauthorized
+	}
+
+	return user, nil
+}
+
+func (s *UserService) GetUserProfile(ctx context.Context, userID int, sessionUserID int) (models.User, error) {
+	if sessionUserID <= 0 {
+		return models.User{}, ErrUnauthorized
+	}
+
+	user, err := s.UserRepo.GetUserByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return models.User{}, ErrUserNotFound
+		}
+		return models.User{}, err
 	}
 
 	return user, nil

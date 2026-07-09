@@ -1,12 +1,13 @@
 package repository
 
 import (
+	"VoAr/internal/database"
 	"VoAr/internal/models"
 	"context"
 )
 
 type CommentRepository struct {
-	DB DBTX
+	DB database.DBTX
 }
 
 func (r *CommentRepository) CreateComment(ctx context.Context, comment models.Comment) (int, error) {
@@ -14,17 +15,17 @@ func (r *CommentRepository) CreateComment(ctx context.Context, comment models.Co
 
 	err := r.DB.QueryRowContext(
 		ctx,
-		"INSERT INTO comments (article_id, user_id, content, created_at) VALUES ($1, $2, $3, $4) RETURNING id",
-		comment.ArticleID, comment.UserID, comment.Content, comment.CreatedAt,
+		"INSERT INTO comments (post_id, user_id, content, created_at) VALUES ($1, $2, $3, $4) RETURNING id",
+		comment.PostID, comment.UserID, comment.Content, comment.CreatedAt,
 	).Scan(&commentID)
 	return commentID, err
 }
 
-func (r *CommentRepository) GetCommentsByArticle(ctx context.Context, articleID int) ([]models.Comment, error) {
+func (r *CommentRepository) GetCommentsByPost(ctx context.Context, postID int) ([]models.Comment, error) {
 	rows, err := r.DB.QueryContext(
 		ctx,
-		"SELECT id, article_id, user_id, content, created_at, updated_at FROM comments WHERE article_id = $1",
-		articleID,
+		"SELECT id, post_id, user_id, content, created_at, updated_at FROM comments WHERE post_id = $1 ORDER BY created_at ASC, id ASC",
+		postID,
 	)
 	if err != nil {
 		return nil, err
@@ -35,8 +36,7 @@ func (r *CommentRepository) GetCommentsByArticle(ctx context.Context, articleID 
 
 	for rows.Next() {
 		var comment models.Comment
-		err = rows.Scan(&comment.ID, &comment.ArticleID, &comment.UserID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
-		if err != nil {
+		if err := rows.Scan(&comment.ID, &comment.PostID, &comment.UserID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
 			return nil, err
 		}
 		comments = append(comments, comment)

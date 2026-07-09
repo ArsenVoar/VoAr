@@ -1,2 +1,12 @@
-
 .env
+
+logs/
+*.log
+
+.agents/
+
+.vscode/
+.idea/
+
+tmp/
+bin/

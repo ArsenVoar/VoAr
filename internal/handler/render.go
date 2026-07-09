@@ -1,35 +1,24 @@
 package handler
 
 import (
+	"VoAr/internal/logger"
 	"html/template"
 	"net/http"
-	"strconv"
 )
 
 var tmpl = template.Must(template.ParseGlob("web/templates/*.html"))
 
-func (h *Handler) renderTemplate(w http.ResponseWriter, name string, data interface{}, errMsg string, r *http.Request) {
+// renderTemplate renders an HTML template with common page data.
+func (h *Handler) renderTemplate(w http.ResponseWriter, name string, data any, errMsg string, r *http.Request) {
+	// Ignore invalid sessions on public pages and render the user as logged out.
 	session, _ := h.Store.Get(r, "session-name")
-
-	val := session.Values["userId"]
 
 	var userID int
 	var isAuth bool
 
-	if val != nil {
+	if value, ok := session.Values["userId"].(int); ok {
 		isAuth = true
-
-		switch v := val.(type) {
-		case int:
-			userID = v
-		case float64:
-			userID = int(v)
-		case string:
-			id, err := strconv.Atoi(v)
-			if err == nil {
-				userID = id
-			}
-		}
+		userID = value
 	}
 
 	tmplData := TemplateData{
@@ -38,7 +27,11 @@ func (h *Handler) renderTemplate(w http.ResponseWriter, name string, data interf
 		Data:   data,
 		Error:  errMsg,
 	}
-	tmpl.ExecuteTemplate(w, name, tmplData)
+	if err := tmpl.ExecuteTemplate(w, name, tmplData); err != nil {
+		logger.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *Handler) MainPage(w http.ResponseWriter, r *http.Request) {
@@ -51,10 +44,6 @@ func (h *Handler) Examples(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	h.renderTemplate(w, "create", nil, "", r)
-}
-
-func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
-	h.renderTemplate(w, "chat", nil, "", r)
 }
 
 func (h *Handler) AuthPage(w http.ResponseWriter, r *http.Request) {

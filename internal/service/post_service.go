@@ -5,21 +5,42 @@ import (
 	"VoAr/internal/models"
 	"VoAr/internal/repository"
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"strconv"
 )
 
+type PostRepository interface {
+	CreatePost(ctx context.Context, userID int, title, anons, fullText string) error
+	GetPostByID(ctx context.Context, id int) (models.Post, error)
+	GetPosts(ctx context.Context, page, pageSize int) ([]models.Post, error)
+}
 type PostService struct {
-	Repo  *repository.PostRepository
-	DB    *sql.DB
-	Cache cache.CacheService
+	PostRepo PostRepository
+	Cache    cache.CacheService
 }
 
-func (s *PostService) GetPost(ctx context.Context, id int) (models.Post, error) {
+const (
+	defaultPage     = 1
+	defaultPageSize = 10
+
+	postCachePrefix = "post:"
+)
+
+func (s *PostService) CreatePost(ctx context.Context, userID int, title, anons, fullText string) error {
+	if userID <= 0 {
+		return ErrUnauthorized
+	}
+	if title == "" || anons == "" || fullText == "" {
+		return ErrEmptyFields
+	}
+
+	return s.PostRepo.CreatePost(ctx, userID, title, anons, fullText)
+}
+
+func (s *PostService) GetPostByID(ctx context.Context, id int) (models.Post, error) {
 	var post models.Post
-	cacheKey := "post:" + strconv.Itoa(id)
+	cacheKey := postCachePrefix + strconv.Itoa(id)
 
 	cachedData, err := s.Cache.Get(ctx, cacheKey)
 	if err == nil {
@@ -28,7 +49,7 @@ func (s *PostService) GetPost(ctx context.Context, id int) (models.Post, error) 
 		}
 	}
 
-	post, err = s.Repo.GetPostById(ctx, id)
+	post, err = s.PostRepo.GetPostByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return models.Post{}, ErrNotFound
@@ -44,18 +65,21 @@ func (s *PostService) GetPost(ctx context.Context, id int) (models.Post, error) 
 }
 
 func (s *PostService) GetPosts(ctx context.Context, pageParam string) ([]models.Post, error) {
-	page := 1
-	pageSize := 10
+	page := defaultPage
 
 	if pageParam != "" {
 		p, err := strconv.Atoi(pageParam)
 		if err != nil {
 			return nil, err
 		}
+
 		page = p
+		if page <= 0 {
+			return nil, ErrInvalidInput
+		}
 	}
 
-	posts, err := s.Repo.GetPosts(ctx, page, pageSize)
+	posts, err := s.PostRepo.GetPosts(ctx, page, defaultPageSize)
 	if err != nil {
 		return nil, err
 	}

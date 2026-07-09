@@ -20,6 +20,7 @@ func NewRedisCache(addr string, defaultTTL time.Duration) CacheService {
 		Addr: addr,
 	})
 
+	// Fallback to NoOpCache if Redis is unavailable.
 	_, err := rdb.Ping(context.Background()).Result()
 	if err != nil {
 		return NewNoOpCache(defaultTTL)
@@ -32,19 +33,18 @@ func NewRedisCache(addr string, defaultTTL time.Duration) CacheService {
 }
 
 func (r *RedisCache) Get(ctx context.Context, key string) ([]byte, error) {
+	requestID := contextkeys.GetRequestID(ctx)
 	cmd := r.client.Get(ctx, key)
 	getValue, err := cmd.Result()
-
-	requestID := contextkeys.GetRequestID(ctx)
 
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			logger.CacheMiss(requestID, key)
 			return nil, ErrCacheMiss
-		} else {
-			logger.CacheError(requestID, key, err)
-			return nil, ErrRedisUnavailable
 		}
+
+		logger.CacheError(requestID, key, err)
+		return nil, ErrRedisUnavailable
 	}
 
 	logger.CacheHit(requestID, key)
@@ -56,10 +56,9 @@ func (r *RedisCache) Set(ctx context.Context, key string, value []byte, ttl time
 		ttl = r.defaultTTL
 	}
 
+	requestID := contextkeys.GetRequestID(ctx)
 	cmd := r.client.Set(ctx, key, value, ttl)
 	err := cmd.Err()
-
-	requestID := contextkeys.GetRequestID(ctx)
 
 	if err != nil {
 		logger.CacheError(requestID, key, err)
@@ -71,10 +70,9 @@ func (r *RedisCache) Set(ctx context.Context, key string, value []byte, ttl time
 }
 
 func (r *RedisCache) Delete(ctx context.Context, key string) error {
+	requestID := contextkeys.GetRequestID(ctx)
 	cmd := r.client.Del(ctx, key)
 	err := cmd.Err()
-
-	requestID := contextkeys.GetRequestID(ctx)
 
 	if err != nil {
 		logger.CacheError(requestID, key, err)
@@ -86,19 +84,18 @@ func (r *RedisCache) Delete(ctx context.Context, key string) error {
 }
 
 func (r *RedisCache) TTL(ctx context.Context, key string) (time.Duration, error) {
+	requestID := contextkeys.GetRequestID(ctx)
 	cmd := r.client.TTL(ctx, key)
 	ttl, err := cmd.Result()
-
-	requestID := contextkeys.GetRequestID(ctx)
 
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			logger.CacheMiss(requestID, key)
 			return 0, ErrCacheMiss
-		} else {
-			logger.CacheError(requestID, key, err)
-			return 0, ErrRedisUnavailable
 		}
+
+		logger.CacheError(requestID, key, err)
+		return 0, ErrRedisUnavailable
 	}
 
 	return ttl, nil

@@ -5,13 +5,9 @@
 .env.example
 
 logs
-
 tmp
 bin
-
-README.md
+.agents/
 
 .vscode
 .idea
-
-db/*.sql
